@@ -4,7 +4,7 @@ A Model Context Protocol (MCP) server for the ServiceTitan public API. You deplo
 
 > **Preview release.** This version is covered by unit tests and a local deploy check, but has not yet been run end to end against a live ServiceTitan tenant. Try it on a sandbox or integration tenant first, and please report problems through the repository issues.
 
-Version 0.1.0. MIT license.
+Version 0.1.1. MIT license.
 
 ## What you need
 
@@ -182,3 +182,11 @@ npx wrangler dev
 ## License
 
 MIT. See `LICENSE`.
+
+## Ownership and disclaimer
+
+Copyright © 2026 Quality Service Company. Released under the MIT License (see `LICENSE`). Maintained by Luke Peluso.
+
+Quality Service Company holds the copyright in this software and nothing more. It provides the software "as is", without warranty of any kind, and accepts no liability for any use of it, any deployment of it, or any fork or derivative of it. Publishing this software is not an endorsement, and Quality Service Company does not support, warrant, or vouch for this project or anything built with it. Please direct questions and issues to this repository, not to Quality Service Company.
+
+This project is not affiliated with, endorsed by, or supported by ServiceTitan, Inc. ServiceTitan is a trademark of its owner and is used here only to describe what the software works with.
