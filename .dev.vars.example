@@ -1,0 +1,6 @@
+# Local secrets for `npx wrangler dev`. Copy to .dev.vars and never commit it.
+ST_CLIENT_ID=
+ST_CLIENT_SECRET=
+ST_APP_KEY=
+MCP_TOKEN=
+CONFIRMATION_SIGNING_KEY=

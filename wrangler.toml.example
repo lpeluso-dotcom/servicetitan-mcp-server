@@ -1,0 +1,79 @@
+# Copy to wrangler.toml and replace the placeholder ids with resources from your own Cloudflare account.
+name = "servicetitan-mcp-server"
+main = "src/index.ts"
+compatibility_date = "2026-04-12"
+compatibility_flags = ["nodejs_compat"]
+
+[observability]
+enabled = true
+
+# Write confirmation tokens, result pages, report runs, cache, and the audit log.
+# This is the only database this build ships.
+[[d1_databases]]
+binding = "DB"
+database_name = "servicetitan-mcp-server"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
+
+# Small cross-isolate cache (roster/catalog lookups, telemetry landing).
+[[kv_namespaces]]
+binding = "STATE_KV"
+id = "00000000000000000000000000000000"
+
+# Optional: per-user sign-in with Cloudflare Access instead of one shared
+# MCP_TOKEN (see README, "Optional: per-user sign-in with Cloudflare Access").
+# Uncomment and bind a second KV namespace to enable it.
+# [[kv_namespaces]]
+# binding = "OAUTH_KV"
+# id = "00000000000000000000000000000000"
+
+# ServiceTitan rate limiting. See the ST_RATE_LIMIT_PER_SEC note under [vars]
+# below before touching this block.
+[[durable_objects.bindings]]
+name = "ST_RATE_LIMITER"
+class_name = "StRateLimiter"
+
+[[migrations]]
+tag = "v1"
+# SQLite-backed storage (works on the free Workers plan — the older
+# key-value Durable Object storage in new_classes requires a paid plan for
+# a new class). StRateLimiter only ever calls storage.get/storage.put, so
+# it needs nothing SQLite-backed storage doesn't already provide.
+new_sqlite_classes = ["StRateLimiter"]
+
+# Daily retention cleanup (deletes expired/old rows from this build's own
+# D1 — see README's "Data retention" section and RETENTION_DAYS below).
+[triggers]
+crons = ["0 7 * * *"]
+
+[vars]
+MCP_SERVICE_VERSION = "0.1.0"
+# "direct" calls the ServiceTitan API straight from this Worker using the
+# ST_CLIENT_ID / ST_CLIENT_SECRET / ST_APP_KEY secrets below. This build has
+# no proxy backend option — there is no service binding to any other Worker.
+ST_BACKEND = "direct"
+ST_ENV = "production"            # "integration" targets ServiceTitan's integration environment instead
+ST_TENANT_ID = "000000000"       # your ServiceTitan tenant id
+# IANA time zone that defines "today" for tools like list_jobs_today. Unset
+# defaults to "America/New_York" in code, but set this explicitly for your
+# business.
+ST_TIMEZONE = "America/New_York"
+# Calls per second the StRateLimiter Durable Object allows through to
+# ServiceTitan. ServiceTitan's own documented limit is 60/s per app per
+# tenant. The limiter enforces this with a FIXED one-second window (not a
+# sliding one), which can let a burst straddling two windows through at up
+# to roughly TWICE this number before the window resets. Do not raise this
+# above 30: at 30, the worst-case burst tops out near ServiceTitan's real
+# 60/s ceiling; any higher and the burst headroom alone can exceed it,
+# especially if another integration shares the same ServiceTitan app.
+ST_RATE_LIMIT_PER_SEC = "30"
+MCP_TOKEN_ROLE = "default"       # "readonly" serves only read tools to MCP_TOKEN holders
+MCP_LOCKDOWN = "false"           # "true" strips every write tool for every caller, including OAuth
+RETENTION_DAYS = "30"            # days to keep audit_log/error_log/otel_span_queue/mcp_operations/mcp_report_queries rows (the daily cron above)
+# Optional Cloudflare Access OAuth vars (see README): SELF_ORIGIN, ALLOWED_EMAILS, ACCESS_ISSUER
+
+# Secrets (set with `npx wrangler secret put <NAME>`):
+#   ST_CLIENT_ID, ST_CLIENT_SECRET, ST_APP_KEY  — your ServiceTitan app credentials
+#   MCP_TOKEN                                   — bearer token clients send to /mcp
+#   CONFIRMATION_SIGNING_KEY                    — signs write confirmation tokens
+#   Optional Cloudflare Access OAuth: ACCESS_CLIENT_ID, ACCESS_CLIENT_SECRET

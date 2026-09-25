@@ -1,0 +1,5 @@
+# .gitleaksignore — gitleaks allowlist for the public servicetitan-mcp-server export.
+#
+# Format: one `<file>:<rule>:<line>` entry per line (gitleaks v8 baseline format).
+# Each entry documents why the flagged text is not a real secret. DO NOT
+# allowlist a real credential here — rotate it instead.
