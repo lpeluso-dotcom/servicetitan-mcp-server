@@ -1,0 +1,746 @@
+{
+  "FormData": {
+    "id": 9001,
+    "name": "Plumbing Service - Job Materials",
+    "active": true,
+    "locked": false,
+    "hide": false,
+    "ownerTypes": [
+      "Job"
+    ],
+    "applyTagsTargets": [],
+    "showOnMobile": true,
+    "allowEmptyToPresent": false,
+    "canDelete": false,
+    "sendOnEvents": [],
+    "dwyerBigBoardReport": false,
+    "createdOn": "2026-01-01T00:00:00.000Z",
+    "modifiedOn": "2026-01-01T00:00:00.000Z",
+    "definition": {
+      "id": 9002,
+      "version": 1,
+      "published": true,
+      "definition": {
+        "rootSection": {
+          "unitType": "Section",
+          "canBeDuplicated": false,
+          "units": [
+            {
+              "unitType": "Section",
+              "canBeDuplicated": true,
+              "units": [
+                {
+                  "unitType": "StaticElement",
+                  "htmlContent": "<h3>Job Information</h3>",
+                  "header": false,
+                  "isPrintViewOnly": false,
+                  "id": "d322a735-3ead-4efe-840e-2b4fda9c025a"
+                },
+                {
+                  "fieldType": "Text",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "CUSTOMER NAME",
+                  "description": "",
+                  "id": "0f756132-e16d-4e72-b18e-859835e1f291",
+                  "smartFieldTag": "CustomerName"
+                },
+                {
+                  "fieldType": "Text",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "LOCATION",
+                  "description": "",
+                  "id": "c268a20e-b78a-4332-a5e1-38e26c4454b9",
+                  "smartFieldTag": "LocationAddress"
+                },
+                {
+                  "fieldType": "Text",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "TECHNICIAN",
+                  "description": "",
+                  "id": "5c374746-5cc3-4c27-8e8a-35b10828d569",
+                  "smartFieldTag": "TechnicianName"
+                },
+                {
+                  "fieldType": "Date",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "DATE",
+                  "description": "",
+                  "id": "0600571f-ac3a-4b26-bfdf-57cd2c006497",
+                  "smartFieldTag": "TodayDate"
+                }
+              ],
+              "name": "Job Information",
+              "id": "11457d9c-f45e-4fa0-9d7f-427515392480"
+            },
+            {
+              "unitType": "Section",
+              "canBeDuplicated": true,
+              "units": [
+                {
+                  "unitType": "StaticElement",
+                  "htmlContent": "<h3>Invoiced Materials Not Used</h3>",
+                  "header": false,
+                  "isPrintViewOnly": false,
+                  "id": "2d6c797f-8f7d-4b78-aa1b-e9cd8697bbd0"
+                },
+                {
+                  "fieldType": "Checkbox",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "ANY INVOICED MATERIALS NOT USED?",
+                  "description": "Check if anything billed on the invoice was not installed.",
+                  "id": "e2520e33-e44c-4055-ac71-c4a66148a86f",
+                  "values": [
+                    "Yes"
+                  ],
+                  "horizontalLayout": false
+                }
+              ],
+              "name": "Invoiced Materials Not Used",
+              "id": "2d3d854e-061b-4030-bb08-c6e33c729578"
+            },
+            {
+              "unitType": "Section",
+              "canBeDuplicated": true,
+              "units": [
+                {
+                  "fieldType": "Text",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "NOT USED 1 - MATERIAL / PART",
+                  "description": "",
+                  "id": "d95bafc8-f2a4-427b-9cf4-bb99f4bea973"
+                },
+                {
+                  "fieldType": "Text",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "NOT USED 1 - QTY",
+                  "description": "",
+                  "id": "5c6e4337-15ba-4bdd-9772-19d30e7a269f"
+                },
+                {
+                  "fieldType": "Checkbox",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "NOT USED 1 - WHERE DID IT GO?",
+                  "description": "",
+                  "id": "cf1822ff-bc68-4778-ab49-1044d5e34124",
+                  "values": [
+                    "Returned to truck",
+                    "Returned to supplier",
+                    "Other"
+                  ],
+                  "horizontalLayout": false
+                }
+              ],
+              "name": "NOT USED 1",
+              "id": "4067c358-4ee2-47f8-9a94-e3e8ab73738f"
+            },
+            {
+              "unitType": "Section",
+              "canBeDuplicated": true,
+              "units": [
+                {
+                  "fieldType": "Text",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "NOT USED 2 - MATERIAL / PART",
+                  "description": "",
+                  "id": "0925e474-9b57-4bd1-b653-f8dd9b1f282e"
+                },
+                {
+                  "fieldType": "Text",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "NOT USED 2 - QTY",
+                  "description": "",
+                  "id": "ffed9235-288b-4781-ae66-267594c9c950"
+                },
+                {
+                  "fieldType": "Checkbox",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "NOT USED 2 - WHERE DID IT GO?",
+                  "description": "",
+                  "id": "cdbd47d3-64be-4049-a372-db8f6e405d93",
+                  "values": [
+                    "Returned to truck",
+                    "Returned to supplier",
+                    "Other"
+                  ],
+                  "horizontalLayout": false
+                }
+              ],
+              "name": "NOT USED 2",
+              "id": "82523e86-feac-4eb7-9c38-f519b91751da"
+            },
+            {
+              "unitType": "Section",
+              "canBeDuplicated": true,
+              "units": [
+                {
+                  "fieldType": "Text",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "NOT USED 3 - MATERIAL / PART",
+                  "description": "",
+                  "id": "ef8acd12-8b4f-4fc1-9f3f-57ebf30b94fa"
+                },
+                {
+                  "fieldType": "Text",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "NOT USED 3 - QTY",
+                  "description": "",
+                  "id": "e6b58de7-44ab-4cce-8087-7b6f71e1f6d2"
+                },
+                {
+                  "fieldType": "Checkbox",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "NOT USED 3 - WHERE DID IT GO?",
+                  "description": "",
+                  "id": "5d300cb9-0706-4045-9efc-044a09325626",
+                  "values": [
+                    "Returned to truck",
+                    "Returned to supplier",
+                    "Other"
+                  ],
+                  "horizontalLayout": false
+                }
+              ],
+              "name": "NOT USED 3",
+              "id": "e8624fab-5186-4e32-ae8d-7ee9770348a0"
+            },
+            {
+              "unitType": "Section",
+              "canBeDuplicated": true,
+              "units": [
+                {
+                  "unitType": "StaticElement",
+                  "htmlContent": "<h3>Truck Stock Used</h3>",
+                  "header": false,
+                  "isPrintViewOnly": false,
+                  "id": "59cc60b1-7604-44b4-a736-95c3e652c71a"
+                },
+                {
+                  "fieldType": "Checkbox",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "USED MATERIALS FROM TRUCK STOCK?",
+                  "description": "Check if you pulled parts off your truck for this job.",
+                  "id": "74667bff-e202-449d-a964-3a295a9ac6de",
+                  "values": [
+                    "Yes"
+                  ],
+                  "horizontalLayout": false
+                }
+              ],
+              "name": "Truck Stock Used",
+              "id": "8ebdbfe3-eb9a-4688-b9d3-9cca91551e82"
+            },
+            {
+              "unitType": "Section",
+              "canBeDuplicated": true,
+              "units": [
+                {
+                  "fieldType": "Text",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "TRUCK 1 - MATERIAL / PART",
+                  "description": "",
+                  "id": "829a48d4-22fe-49a2-ac70-501e533c9135"
+                },
+                {
+                  "fieldType": "Text",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "TRUCK 1 - QTY",
+                  "description": "",
+                  "id": "83844b40-ffa9-49f1-9c14-bc4a829e07b0"
+                },
+                {
+                  "fieldType": "Checkbox",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "TRUCK 1 - ON THE INVOICE?",
+                  "description": "",
+                  "id": "fec3f6b3-2e8d-4b8a-8f54-f8ceacaab39e",
+                  "values": [
+                    "Yes",
+                    "No"
+                  ],
+                  "horizontalLayout": false
+                }
+              ],
+              "name": "TRUCK 1",
+              "id": "6a27e0df-cbf8-4544-b215-4e76e4c11ab2"
+            },
+            {
+              "unitType": "Section",
+              "canBeDuplicated": true,
+              "units": [
+                {
+                  "fieldType": "Text",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "TRUCK 2 - MATERIAL / PART",
+                  "description": "",
+                  "id": "e89204e2-e816-4561-867e-5e15bc01bfce"
+                },
+                {
+                  "fieldType": "Text",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "TRUCK 2 - QTY",
+                  "description": "",
+                  "id": "97eeab64-ca2c-46bc-9d3f-d983c34c769f"
+                },
+                {
+                  "fieldType": "Checkbox",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "TRUCK 2 - ON THE INVOICE?",
+                  "description": "",
+                  "id": "dbe53fca-fb21-47df-9ca4-95fa5a91c89b",
+                  "values": [
+                    "Yes",
+                    "No"
+                  ],
+                  "horizontalLayout": false
+                }
+              ],
+              "name": "TRUCK 2",
+              "id": "f4767f26-2943-45b2-b21d-ea3bf63f23d0"
+            },
+            {
+              "unitType": "Section",
+              "canBeDuplicated": true,
+              "units": [
+                {
+                  "fieldType": "Text",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "TRUCK 3 - MATERIAL / PART",
+                  "description": "",
+                  "id": "bd143fa9-b714-410c-a65d-7435c1066932"
+                },
+                {
+                  "fieldType": "Text",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "TRUCK 3 - QTY",
+                  "description": "",
+                  "id": "3ff98ff3-87c5-4473-a7a8-3ee0761ebfd2"
+                },
+                {
+                  "fieldType": "Checkbox",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "TRUCK 3 - ON THE INVOICE?",
+                  "description": "",
+                  "id": "7f81375e-ecc1-4b63-8773-3e847d718d73",
+                  "values": [
+                    "Yes",
+                    "No"
+                  ],
+                  "horizontalLayout": false
+                }
+              ],
+              "name": "TRUCK 3",
+              "id": "cbd4d3e2-d4de-49ef-83f0-be4e80371eb9"
+            },
+            {
+              "unitType": "Section",
+              "canBeDuplicated": true,
+              "units": [
+                {
+                  "unitType": "StaticElement",
+                  "htmlContent": "<h3>Supply House Run</h3>",
+                  "header": false,
+                  "isPrintViewOnly": false,
+                  "id": "ea748db9-e020-407a-aeb6-db2c3a038a70"
+                },
+                {
+                  "fieldType": "Checkbox",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "WENT TO A SUPPLY HOUSE FOR THIS JOB?",
+                  "description": "Check if you bought materials for this job.",
+                  "id": "9779ac1f-45e9-4d32-8c85-5fdfa7251af0",
+                  "values": [
+                    "Yes"
+                  ],
+                  "horizontalLayout": false
+                }
+              ],
+              "name": "Supply House Run",
+              "id": "22f1a831-85b9-4f5f-811e-60de1b343f52"
+            },
+            {
+              "unitType": "Section",
+              "canBeDuplicated": true,
+              "units": [
+                {
+                  "fieldType": "Text",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "SUPPLY HOUSE NAME",
+                  "description": "",
+                  "id": "a8acb513-7c92-40dc-b4e0-88a9b9492f25"
+                }
+              ],
+              "name": "Supply House",
+              "id": "d08f1bb2-531d-4460-b0ca-eef038c89b38"
+            },
+            {
+              "unitType": "Section",
+              "canBeDuplicated": true,
+              "units": [
+                {
+                  "fieldType": "Text",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "BOUGHT 1 - MATERIAL / PART",
+                  "description": "",
+                  "id": "e06f291b-2a83-4af8-95c4-4a4eb3172062"
+                },
+                {
+                  "fieldType": "Text",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "BOUGHT 1 - QTY",
+                  "description": "",
+                  "id": "c5e2486c-44a4-48f6-9dc8-db48e86ec9c6"
+                }
+              ],
+              "name": "BOUGHT 1",
+              "id": "4da4daeb-4f3f-4777-bad1-f45ae9500ec9"
+            },
+            {
+              "unitType": "Section",
+              "canBeDuplicated": true,
+              "units": [
+                {
+                  "fieldType": "Text",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "BOUGHT 2 - MATERIAL / PART",
+                  "description": "",
+                  "id": "d4c0dca8-b4c9-4755-8c9c-3adcf515a823"
+                },
+                {
+                  "fieldType": "Text",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "BOUGHT 2 - QTY",
+                  "description": "",
+                  "id": "81e220df-848b-4df7-8feb-994a81167346"
+                }
+              ],
+              "name": "BOUGHT 2",
+              "id": "681b8f58-9683-4b76-9da5-9b74a6c3181c"
+            },
+            {
+              "unitType": "Section",
+              "canBeDuplicated": true,
+              "units": [
+                {
+                  "fieldType": "Text",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "BOUGHT 3 - MATERIAL / PART",
+                  "description": "",
+                  "id": "7d28f934-3533-4774-bb1e-386c4fd5079e"
+                },
+                {
+                  "fieldType": "Text",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "BOUGHT 3 - QTY",
+                  "description": "",
+                  "id": "af29d115-ef24-4d62-9dd9-61e6830b54fa"
+                }
+              ],
+              "name": "BOUGHT 3",
+              "id": "c8c69069-134b-4cd3-a1cf-4f589f8e4ce0"
+            },
+            {
+              "unitType": "Section",
+              "canBeDuplicated": true,
+              "units": [
+                {
+                  "fieldType": "Picture",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "RECEIPT PHOTO",
+                  "description": "The whole receipt. Total and items must be readable.",
+                  "id": "0227eeb7-b9d7-401f-9769-da05d205bbfc"
+                },
+                {
+                  "fieldType": "Text",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "RECEIPT TOTAL $",
+                  "description": "",
+                  "id": "ff3fe32a-30ff-44ee-90a7-bd04e85bfcdd"
+                }
+              ],
+              "name": "Receipt",
+              "id": "930cdbd3-0f0a-42a8-9b2d-19a2beaa14a7"
+            },
+            {
+              "unitType": "Section",
+              "canBeDuplicated": true,
+              "units": [
+                {
+                  "unitType": "StaticElement",
+                  "htmlContent": "<h3>Comments</h3>",
+                  "header": false,
+                  "isPrintViewOnly": false,
+                  "id": "eb2b5693-babb-4fbb-8a76-c196067cfdcb"
+                },
+                {
+                  "fieldType": "Text",
+                  "unitType": "Field",
+                  "isRequired": false,
+                  "name": "COMMENTS",
+                  "description": "",
+                  "id": "20b6a846-4174-475a-9f83-4da70569c018"
+                }
+              ],
+              "name": "Comments",
+              "id": "bc1b00d9-2838-4766-af9b-6bf2d037fe2e"
+            },
+            {
+              "unitType": "Section",
+              "canBeDuplicated": true,
+              "units": [
+                {
+                  "unitType": "StaticElement",
+                  "htmlContent": "<h3>Acknowledgment</h3>",
+                  "header": false,
+                  "isPrintViewOnly": false,
+                  "id": "007ee4fa-b105-483e-85e9-51862f0981ae"
+                },
+                {
+                  "fieldType": "Signature",
+                  "unitType": "Field",
+                  "isRequired": true,
+                  "name": "I confirm the materials reported above are accurate for this job",
+                  "description": "",
+                  "id": "cb4deeec-0b0c-495e-96e6-bc4d62b47204",
+                  "refusalReasons": [
+                    "Not the technician who did the work",
+                    "Other - see comments"
+                  ]
+                }
+              ],
+              "name": "Acknowledgment",
+              "id": "f8877acf-26c3-47c1-bf71-9726fd70bdda"
+            }
+          ],
+          "name": "Root",
+          "id": "f03f2d71-581d-4e83-8112-ff0f0948ecca"
+        },
+        "rules": [
+          {
+            "whenMatch": "All",
+            "actions": [
+              {
+                "type": "Toggle",
+                "unit": "4067c358-4ee2-47f8-9a94-e3e8ab73738f",
+                "mode": "Off",
+                "isMet": false
+              },
+              {
+                "type": "Toggle",
+                "unit": "82523e86-feac-4eb7-9c38-f519b91751da",
+                "mode": "Off",
+                "isMet": false
+              },
+              {
+                "type": "Toggle",
+                "unit": "e8624fab-5186-4e32-ae8d-7ee9770348a0",
+                "mode": "Off",
+                "isMet": false
+              },
+              {
+                "type": "Toggle",
+                "unit": "6a27e0df-cbf8-4544-b215-4e76e4c11ab2",
+                "mode": "Off",
+                "isMet": false
+              },
+              {
+                "type": "Toggle",
+                "unit": "f4767f26-2943-45b2-b21d-ea3bf63f23d0",
+                "mode": "Off",
+                "isMet": false
+              },
+              {
+                "type": "Toggle",
+                "unit": "cbd4d3e2-d4de-49ef-83f0-be4e80371eb9",
+                "mode": "Off",
+                "isMet": false
+              },
+              {
+                "type": "Toggle",
+                "unit": "d08f1bb2-531d-4460-b0ca-eef038c89b38",
+                "mode": "Off",
+                "isMet": false
+              },
+              {
+                "type": "Toggle",
+                "unit": "4da4daeb-4f3f-4777-bad1-f45ae9500ec9",
+                "mode": "Off",
+                "isMet": false
+              },
+              {
+                "type": "Toggle",
+                "unit": "681b8f58-9683-4b76-9da5-9b74a6c3181c",
+                "mode": "Off",
+                "isMet": false
+              },
+              {
+                "type": "Toggle",
+                "unit": "c8c69069-134b-4cd3-a1cf-4f589f8e4ce0",
+                "mode": "Off",
+                "isMet": false
+              },
+              {
+                "type": "Toggle",
+                "unit": "930cdbd3-0f0a-42a8-9b2d-19a2beaa14a7",
+                "mode": "Off",
+                "isMet": false
+              }
+            ],
+            "conditions": [
+              {
+                "type": "InitialLoad"
+              }
+            ]
+          },
+          {
+            "whenMatch": "All",
+            "actions": [
+              {
+                "type": "Toggle",
+                "unit": "4067c358-4ee2-47f8-9a94-e3e8ab73738f",
+                "mode": "On",
+                "isMet": false
+              },
+              {
+                "type": "Toggle",
+                "unit": "82523e86-feac-4eb7-9c38-f519b91751da",
+                "mode": "On",
+                "isMet": false
+              },
+              {
+                "type": "Toggle",
+                "unit": "e8624fab-5186-4e32-ae8d-7ee9770348a0",
+                "mode": "On",
+                "isMet": false
+              }
+            ],
+            "conditions": [
+              {
+                "type": "Compare",
+                "operator": "Equals",
+                "left": "e2520e33-e44c-4055-ac71-c4a66148a86f",
+                "right": "Yes"
+              }
+            ]
+          },
+          {
+            "whenMatch": "All",
+            "actions": [
+              {
+                "type": "Toggle",
+                "unit": "6a27e0df-cbf8-4544-b215-4e76e4c11ab2",
+                "mode": "On",
+                "isMet": false
+              },
+              {
+                "type": "Toggle",
+                "unit": "f4767f26-2943-45b2-b21d-ea3bf63f23d0",
+                "mode": "On",
+                "isMet": false
+              },
+              {
+                "type": "Toggle",
+                "unit": "cbd4d3e2-d4de-49ef-83f0-be4e80371eb9",
+                "mode": "On",
+                "isMet": false
+              }
+            ],
+            "conditions": [
+              {
+                "type": "Compare",
+                "operator": "Equals",
+                "left": "74667bff-e202-449d-a964-3a295a9ac6de",
+                "right": "Yes"
+              }
+            ]
+          },
+          {
+            "whenMatch": "All",
+            "actions": [
+              {
+                "type": "Toggle",
+                "unit": "d08f1bb2-531d-4460-b0ca-eef038c89b38",
+                "mode": "On",
+                "isMet": false
+              },
+              {
+                "type": "Toggle",
+                "unit": "4da4daeb-4f3f-4777-bad1-f45ae9500ec9",
+                "mode": "On",
+                "isMet": false
+              },
+              {
+                "type": "Toggle",
+                "unit": "681b8f58-9683-4b76-9da5-9b74a6c3181c",
+                "mode": "On",
+                "isMet": false
+              },
+              {
+                "type": "Toggle",
+                "unit": "c8c69069-134b-4cd3-a1cf-4f589f8e4ce0",
+                "mode": "On",
+                "isMet": false
+              },
+              {
+                "type": "Toggle",
+                "unit": "930cdbd3-0f0a-42a8-9b2d-19a2beaa14a7",
+                "mode": "On",
+                "isMet": false
+              }
+            ],
+            "conditions": [
+              {
+                "type": "Compare",
+                "operator": "Equals",
+                "left": "9779ac1f-45e9-4d32-8c85-5fdfa7251af0",
+                "right": "Yes"
+              }
+            ]
+          }
+        ],
+        "hasConditionalLogic": true
+      },
+      "printOptions": [
+        "ShowBusinessUnitLogoOnPrintView"
+      ]
+    },
+    "BusinessUnits": null,
+    "ApplyTagTypes": null
+  },
+  "FormTriggers": [],
+  "IsForm20": true,
+  "IsLocked": false
+}

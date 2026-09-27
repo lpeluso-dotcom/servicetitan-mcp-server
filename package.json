@@ -1,6 +1,6 @@
 {
   "name": "servicetitan-mcp-server",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "MCP server for the ServiceTitan public API, deployed to your own Cloudflare account.",
   "license": "MIT",
   "private": true,

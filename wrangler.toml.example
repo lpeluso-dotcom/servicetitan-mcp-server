@@ -47,7 +47,7 @@ new_sqlite_classes = ["StRateLimiter"]
 crons = ["0 7 * * *"]
 
 [vars]
-MCP_SERVICE_VERSION = "0.1.1"
+MCP_SERVICE_VERSION = "0.1.2"
 # "direct" calls the ServiceTitan API straight from this Worker using the
 # ST_CLIENT_ID / ST_CLIENT_SECRET / ST_APP_KEY secrets below. This build has
 # no proxy backend option — there is no service binding to any other Worker.

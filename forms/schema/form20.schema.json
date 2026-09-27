@@ -1,0 +1,198 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "servicetitan-form20-export.schema.json",
+  "title": "ServiceTitan Form 2.0 export-format form (import-safe subset)",
+  "description": "Structure of a ServiceTitan native form in export format, limited to shapes confirmed in real exports and known to import and open. Structural only: cross-references (rule ids, duplicate ids, rule ordering) are checked by generator/generate.py --check. See reference/schema.md.",
+  "type": "object",
+  "required": ["FormData", "FormTriggers", "IsForm20"],
+  "properties": {
+    "FormData": { "$ref": "#/$defs/formData" },
+    "FormTriggers": {
+      "description": "When ServiceTitan opens the form. Use [] on first import and add triggers in the UI after testing.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/trigger" }
+    },
+    "IsForm20": { "const": true },
+    "IsLocked": { "type": "boolean" }
+  },
+  "$defs": {
+    "uuid": {
+      "description": "Lowercase hex UUID. Must be unique within the form.",
+      "type": "string",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+    },
+    "nonEmptyString": { "type": "string", "minLength": 1 },
+    "formData": {
+      "type": "object",
+      "required": ["id", "name", "ownerTypes", "createdOn", "modifiedOn", "definition"],
+      "properties": {
+        "id": { "description": "Replaced by ServiceTitan on import. Use a non-zero integer.", "type": "integer", "not": { "const": 0 } },
+        "name": { "$ref": "#/$defs/nonEmptyString" },
+        "active": { "type": "boolean" },
+        "locked": { "type": "boolean" },
+        "hide": { "type": "boolean" },
+        "ownerTypes": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "enum": ["Job", "Customer", "Location", "Call", "Equipment"] }
+        },
+        "applyTagsTargets": { "type": "array", "items": { "type": "string" } },
+        "showOnMobile": { "type": "boolean" },
+        "allowEmptyToPresent": { "type": "boolean" },
+        "canDelete": { "type": "boolean" },
+        "sendOnEvents": { "type": "array", "items": { "type": "string" } },
+        "dwyerBigBoardReport": { "type": "boolean" },
+        "createdOn": { "description": "Required, or the imported form opens empty.", "$ref": "#/$defs/nonEmptyString" },
+        "modifiedOn": { "description": "Required, or the imported form opens empty.", "$ref": "#/$defs/nonEmptyString" },
+        "definition": { "$ref": "#/$defs/definitionWrapper" },
+        "BusinessUnits": { "type": ["array", "null"], "items": { "type": "string" } },
+        "ApplyTagTypes": { "type": ["array", "null"] }
+      }
+    },
+    "definitionWrapper": {
+      "type": "object",
+      "required": ["id", "published", "definition"],
+      "properties": {
+        "id": { "type": "integer", "not": { "const": 0 } },
+        "version": { "type": "integer" },
+        "published": { "description": "Must be true. A draft import cannot be opened in the editor.", "const": true },
+        "definition": {
+          "type": "object",
+          "required": ["rootSection", "hasConditionalLogic"],
+          "properties": {
+            "rootSection": { "$ref": "#/$defs/rootSection" },
+            "rules": { "type": "array", "items": { "$ref": "#/$defs/rule" } },
+            "hasConditionalLogic": { "description": "true exactly when rules is non-empty.", "type": "boolean" }
+          }
+        },
+        "printOptions": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "rootSection": {
+      "description": "The root holds only Sections.",
+      "type": "object",
+      "required": ["unitType", "units", "id"],
+      "properties": {
+        "unitType": { "const": "Section" },
+        "canBeDuplicated": { "type": "boolean" },
+        "name": { "type": "string" },
+        "id": { "$ref": "#/$defs/uuid" },
+        "units": { "type": "array", "items": { "$ref": "#/$defs/section" } }
+      }
+    },
+    "section": {
+      "description": "A Section directly under the root. It may hold Fields and StaticElements, never another Section.",
+      "type": "object",
+      "required": ["unitType", "canBeDuplicated", "name", "id", "units"],
+      "properties": {
+        "unitType": { "const": "Section" },
+        "canBeDuplicated": { "const": true },
+        "name": { "$ref": "#/$defs/nonEmptyString" },
+        "id": { "$ref": "#/$defs/uuid" },
+        "units": {
+          "type": "array",
+          "items": { "oneOf": [{ "$ref": "#/$defs/staticElement" }, { "$ref": "#/$defs/field" }] }
+        }
+      }
+    },
+    "staticElement": {
+      "type": "object",
+      "required": ["unitType", "htmlContent", "header", "id"],
+      "properties": {
+        "unitType": { "const": "StaticElement" },
+        "htmlContent": { "type": "string", "not": { "pattern": "\\{\\{" } },
+        "header": { "description": "Use false with <h3> HTML for headings.", "const": false },
+        "isPrintViewOnly": { "type": "boolean" },
+        "id": { "$ref": "#/$defs/uuid" }
+      },
+      "additionalProperties": false
+    },
+    "field": {
+      "type": "object",
+      "required": ["unitType", "fieldType", "isRequired", "name", "id"],
+      "properties": {
+        "unitType": { "const": "Field" },
+        "fieldType": { "enum": ["Text", "Dropdown", "Checkbox", "Date", "Picture", "Signature", "Stoplight"] },
+        "isRequired": { "type": "boolean" },
+        "name": { "$ref": "#/$defs/nonEmptyString" },
+        "description": { "type": "string" },
+        "id": { "$ref": "#/$defs/uuid" },
+        "smartFieldTag": { "enum": ["CustomerName", "LocationAddress", "TechnicianName", "TodayDate"] },
+        "values": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "horizontalLayout": { "type": "boolean" },
+        "refusalReasons": { "type": "array", "items": { "type": "string" } },
+        "defaultValue": { "enum": ["Green", "Yellow", "Red"] }
+      },
+      "allOf": [
+        { "if": { "properties": { "fieldType": { "enum": ["Dropdown", "Checkbox"] } } }, "then": { "required": ["values"] } },
+        { "if": { "properties": { "fieldType": { "const": "Signature" } } }, "then": { "required": ["refusalReasons"] } },
+        { "if": { "properties": { "fieldType": { "const": "Stoplight" } } }, "then": { "required": ["defaultValue"] } },
+        { "if": { "properties": { "smartFieldTag": { "const": "TodayDate" } }, "required": ["smartFieldTag"] },
+          "then": { "properties": { "fieldType": { "const": "Date" } } } },
+        { "if": { "properties": { "smartFieldTag": { "enum": ["CustomerName", "LocationAddress", "TechnicianName"] } }, "required": ["smartFieldTag"] },
+          "then": { "properties": { "fieldType": { "const": "Text" } } } }
+      ]
+    },
+    "rule": {
+      "description": "Confirmed shape: Toggle actions with InitialLoad or Compare/Equals conditions. Lower rules override higher ones.",
+      "type": "object",
+      "required": ["whenMatch", "actions", "conditions"],
+      "not": { "required": ["condition"] },
+      "properties": {
+        "whenMatch": { "enum": ["All", "Any"] },
+        "actions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["type", "unit", "mode"],
+            "properties": {
+              "type": { "const": "Toggle" },
+              "unit": { "$ref": "#/$defs/uuid" },
+              "mode": { "enum": ["On", "Off"] },
+              "isMet": { "const": false }
+            }
+          }
+        },
+        "conditions": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "oneOf": [
+              { "type": "object", "required": ["type"], "properties": { "type": { "const": "InitialLoad" } }, "additionalProperties": false },
+              {
+                "type": "object",
+                "required": ["type", "operator", "left", "right"],
+                "properties": {
+                  "type": { "const": "Compare" },
+                  "operator": { "const": "Equals" },
+                  "left": { "$ref": "#/$defs/uuid" },
+                  "right": { "type": "string" }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "trigger": {
+      "type": "object",
+      "required": ["Active", "JobEvent", "OwnerTypes"],
+      "properties": {
+        "Active": { "type": "boolean" },
+        "Required": { "type": "boolean" },
+        "MustCompleteFormWhenTriggered": { "type": "boolean" },
+        "RequireEachTechToCompleteForm": { "type": "boolean" },
+        "OwnerTypes": { "type": "array", "items": { "type": "string" } },
+        "JobEvent": { "enum": ["AfterArrival", "OnCompletionAfterInvoice"] },
+        "CustomerTypes": { "type": ["array", "null"] },
+        "BusinessUnitNames": { "type": ["array", "null"], "items": { "type": "string" } },
+        "JobTypeNames": { "type": ["array", "null"], "items": { "type": "string" } },
+        "EquipmentTypeNames": { "type": ["array", "null"] },
+        "ServiceNames": { "type": ["array", "null"] },
+        "OnAllAppointments": { "type": "boolean" },
+        "Tags": { "type": ["array", "null"], "items": { "type": "string" } }
+      }
+    }
+  }
+}

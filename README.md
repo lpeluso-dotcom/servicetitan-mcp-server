@@ -4,7 +4,7 @@ A Model Context Protocol (MCP) server for the ServiceTitan public API. You deplo
 
 > **Preview release.** This version is covered by unit tests and a local deploy check, but has not yet been run end to end against a live ServiceTitan tenant. Try it on a sandbox or integration tenant first, and please report problems through the repository issues.
 
-Version 0.1.1. MIT license.
+Version 0.1.2. MIT license.
 
 ## What you need
 
@@ -159,6 +159,10 @@ A daily cron (`[triggers]` in `wrangler.toml.example`) deletes expired or old ro
   - `get_form_submission`: Form submission data is not available through ServiceTitan's public API.
   - `opportunities_list`: no public ServiceTitan endpoint
   - `opportunity_get`: no public ServiceTitan endpoint
+
+## Forms kit
+
+`forms/` holds a separate toolkit for building ServiceTitan native forms (Form 2.0) as import-ready JSON: the format reference, an import checklist, a JSON Schema, three example forms, and a small Python generator and checker (standard library only). It needs no credentials and does not use the MCP server. It is also written as instructions for an AI assistant: point the assistant at `forms/SKILL.md`. Start with `forms/README.md`.
 
 ## Troubleshooting
 
