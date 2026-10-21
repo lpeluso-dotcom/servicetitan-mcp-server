@@ -20,6 +20,7 @@ vi.mock('@cloudflare/workers-oauth-provider', () => {
 });
 
 import { handleOAuthRoute } from '../oauth';
+import { oauthFlowStateStub } from './oauth-flow-state-stub';
 
 describe('ALLOWED_EMAILS allow-list fails closed', () => {
   function envWithout(allowed?: string) {
@@ -27,6 +28,7 @@ describe('ALLOWED_EMAILS allow-list fails closed', () => {
       ACCESS_ISSUER: 'https://team.cloudflareaccess.com/cdn-cgi/access/sso/oidc/abc123',
       SELF_ORIGIN: 'https://example.workers.dev',
       ...(allowed === undefined ? {} : { ALLOWED_EMAILS: allowed }),
+      OAUTH_FLOW_STATE: oauthFlowStateStub({}),
       OAUTH_KV: {
         get: async () => null,
         put: async () => undefined,
@@ -36,7 +38,7 @@ describe('ALLOWED_EMAILS allow-list fails closed', () => {
   }
 
   it('does not throw on /callback when ALLOWED_EMAILS is undefined', async () => {
-    const req = new Request('https://example.workers.dev/callback?state=s&code=c');
+    const req = new Request('https://example.workers.dev/callback?state=00000000-0000-4000-8000-0000000000aa&code=c');
     const res = await handleOAuthRoute(req, envWithout(), new URL(req.url));
     
     
@@ -45,7 +47,7 @@ describe('ALLOWED_EMAILS allow-list fails closed', () => {
   });
 
   it('does not throw on /callback when ALLOWED_EMAILS is blank', async () => {
-    const req = new Request('https://example.workers.dev/callback?state=s&code=c');
+    const req = new Request('https://example.workers.dev/callback?state=00000000-0000-4000-8000-0000000000aa&code=c');
     const res = await handleOAuthRoute(req, envWithout(''), new URL(req.url));
     expect(res).not.toBeNull();
     expect(res!.status).toBe(400);

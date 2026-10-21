@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import type { RequestContext } from '../tool-registry';
+import { mergedAnnotations } from '../tool-registry';
 
 
 vi.mock('agents/mcp', () => ({ createMcpHandler: () => async () => new Response('mcp-ok') }));
@@ -52,6 +53,38 @@ describe('public entry', () => {
     }
   });
 
+  it.each(['default', 'readonly'] as const)('serves compacted inputSchemas and keeps every other tool field for role %s', async (role) => {
+    const server = entry.buildPublicServer(makeEnv(), execCtx, { actor: 't', role });
+    const [a, b] = InMemoryTransport.createLinkedPair();
+    const client = new Client({ name: 'public-entry-test', version: '0' });
+    await Promise.all([server.connect(a), client.connect(b)]);
+    try {
+      const listed = await client.listTools();
+      const defs = new Map(filterToolsForRole(PUBLIC_TOOLS, role).map((t) => [t.name, t]));
+      expect(listed.tools.length).toBe(defs.size);
+      for (const tool of listed.tools) {
+        const def = defs.get(tool.name)!;
+        // The compaction wrap spreads `...tool` before replacing inputSchema, so
+        // every other field must survive by value.
+        const annotations = mergedAnnotations(def);
+        expect(tool.description).toBe(def.description);
+        expect(tool.title).toBe(annotations.title);
+        expect(tool.annotations).toEqual(annotations);
+        expect(Boolean(tool.outputSchema)).toBe(Boolean(def.outputSchema));
+      }
+      const wireInputs = JSON.stringify(listed.tools.map((t) => t.inputSchema));
+      expect(wireInputs).not.toContain('"$schema"');
+      expect(wireInputs).not.toContain('9007199254740991');
+      // Without $schema, clients read the schema as JSON Schema 2020-12. Guard
+      // against draft-7-only keywords that would be silently misread.
+      expect(wireInputs).not.toContain('"definitions"');
+      expect(wireInputs).not.toContain('"additionalItems"');
+      expect(wireInputs).not.toContain('"items":[');
+    } finally {
+      await client.close();
+    }
+  });
+
   it('answers /health without auth', async () => {
     const resp = await entry.default.fetch(new Request('https://w.example/health'), makeEnv(), execCtx);
     expect(resp.status).toBe(200);
@@ -77,6 +110,7 @@ describe('public entry', () => {
 
   const COMPLETE_OAUTH_CONFIG = {
     OAUTH_KV: {},
+    OAUTH_FLOW_STATE: {},
     ACCESS_ISSUER: 'https://team.cloudflareaccess.com/cdn-cgi/access/sso/oidc/abc123',
     ACCESS_CLIENT_ID: 'client-id',
     ACCESS_CLIENT_SECRET: 'client-secret',

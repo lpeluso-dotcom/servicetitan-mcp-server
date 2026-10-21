@@ -19,6 +19,7 @@ vi.mock('@cloudflare/workers-oauth-provider', () => {
 });
 
 import { handleOAuthRoute } from '../oauth';
+import { oauthFlowStateStub } from './oauth-flow-state-stub';
 
 const ISSUER = 'https://team.cloudflareaccess.com/cdn-cgi/access/sso/oidc/abc123';
 const CLIENT_ID = 'access-client-id';
@@ -66,7 +67,7 @@ describe('/callback parks the grant instead of completing it', () => {
   async function run(email: string) {
     const nonce = 'nonce-abc';
     const csrf = 'csrf-abc';
-    const state = 'login-state-1';
+    const state = '00000000-0000-4000-8000-000000000007';
     const oauthReqInfo = {
       clientId: 'attacker-client',
       redirectUri: 'https://evil.example/cb',
@@ -112,6 +113,7 @@ describe('/callback parks the grant instead of completing it', () => {
       ACCESS_CLIENT_SECRET: 'shh',
       SELF_ORIGIN: ORIGIN,
       ALLOWED_EMAILS: 'ok@example.org',
+      OAUTH_FLOW_STATE: oauthFlowStateStub(store),
       OAUTH_KV: {
         get: async (k: string) => store[k] ?? null,
         put: async (k: string, v: string) => {
@@ -156,7 +158,7 @@ describe('/callback parks the grant instead of completing it', () => {
     expect((value.oauthReqInfo as Record<string, unknown>).clientId).toBe('attacker-client');
 
     
-    expect(store['login:login-state-1']).toBeUndefined();
+    expect(store['login:00000000-0000-4000-8000-000000000007']).toBeUndefined();
   });
 
   it('rejects a non-allow-listed email before parking anything', async () => {
