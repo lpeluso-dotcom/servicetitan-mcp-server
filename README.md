@@ -4,7 +4,7 @@ A Model Context Protocol (MCP) server for the ServiceTitan public API. You deplo
 
 > **Preview release.** This version is covered by unit tests and a local deploy check, but has not yet been run end to end against a live ServiceTitan tenant. Try it on a sandbox or integration tenant first, and please report problems through the repository issues.
 
-Version 0.1.2. MIT license.
+Version 0.2.0. MIT license.
 
 ## What you need
 
@@ -60,9 +60,10 @@ Instead of one shared token, users can sign in through Cloudflare Access with an
 
 1. In Cloudflare Zero Trust, create a SaaS application using OIDC. Set its redirect URL to `https://<worker-name>.<your-account-subdomain>.workers.dev/callback`.
 2. Create a second KV namespace and bind it as `OAUTH_KV` (see the commented block in `wrangler.toml.example`).
-3. Set vars `SELF_ORIGIN` (your Worker URL), `ALLOWED_EMAILS` (comma-separated), and `ACCESS_ISSUER` (the issuer URL Access shows for the app).
-4. Set secrets `ACCESS_CLIENT_ID` and `ACCESS_CLIENT_SECRET`.
-5. Point clients at `https://<worker-name>.<your-account-subdomain>.workers.dev/mcp-oauth`.
+3. Bind the `OAUTH_FLOW_STATE` Durable Object (class `OAuthFlowState`) and keep the `v2` migration that creates it. Both are in `wrangler.toml.example`. It holds the short-lived login and consent state; without it the OAuth routes answer `503 oauth_not_configured`.
+4. Set vars `SELF_ORIGIN` (your Worker URL), `ALLOWED_EMAILS` (comma-separated), and `ACCESS_ISSUER` (the issuer URL Access shows for the app).
+5. Set secrets `ACCESS_CLIENT_ID` and `ACCESS_CLIENT_SECRET`.
+6. Point clients at `https://<worker-name>.<your-account-subdomain>.workers.dev/mcp-oauth`.
 
 ## Tools
 
@@ -72,19 +73,24 @@ Instead of one shared token, users can sign in through Cloudflare Access with an
 | `add_job_note` | write | Append a note to a job. |
 | `create_estimate_template` | write | Create a new estimate template. |
 | `create_proposal_template` | write | Create a proposal template (a tiered set of estimate templates, for example Good/Better/Best). |
+| `create_recurring_service` | write | Create a recurring service under an active membership. |
 | `create_task` | write | Create a task linked to a job. |
+| `customer_snapshot` | read | Customer details, locations, jobs, memberships, estimates, and invoices in one call. Reports partial results if one read fails. |
 | `delete_estimate_template` | write | Soft-deactivates an estimate template (sets active=false) — reversible via update_estimate_template({templateId, active:true}). |
 | `delete_proposal_template` | write | Delete a proposal template. |
+| `dismiss_estimate` | write | Dismiss an estimate (status becomes Dismissed). |
 | `find_customer` | read | Search ST customers by name or phone. |
 | `find_technician_by_name` | read | Resolve a technician name (full or partial) to their technicianId and roster profile. |
 | `get_call` | read | Get details for a telecom call record including duration, campaign attribution, and recording info. |
 | `get_campaign_performance` | read | Get performance metrics for a campaign (leads, bookings, revenue) via ST Reporting API. |
 | `get_capacity` | read | Get dispatch capacity for business units over a date range (POST to ST /dispatch/v2/.../capacity; the body carries the filters). |
+| `get_configurable_equipment_children` | read | Get the child equipment variations of a configurable (parent) equipment item. |
 | `get_customer` | read | Get a single ST customer by ID. |
 | `get_customer_locations` | read | Get service locations for a customer. |
 | `get_customer_membership` | read | Get memberships for a customer. |
 | `get_estimate` | read | Get full details for a single estimate including line items and status. |
 | `get_estimate_template` | read | Get full details for a single estimate template, including its line items. |
+| `get_form_submission` | read | Get a form submission by `formId` and `submissionId`. |
 | `get_invoice` | read | Get full invoice details including line items and totals. |
 | `get_invoice_balance` | read | Get the outstanding balance for an invoice. |
 | `get_job` | read | Get a single ST job by ID. |
@@ -92,11 +98,13 @@ Instead of one shared token, users can sign in through Cloudflare Access with an
 | `get_job_history` | read | Get the audit-log / event timeline for a single ST job: booking events, capacity-tool usage, status changes, reassignments, etc. |
 | `get_proposal_tiers` | read | Return the tier ladder (for example Good/Better/Best) of a proposal template: each tier's order, proposalTypeOptionId, estimate template id and name, item count, and active flag, in assignment order. |
 | `get_result_page` | read | Retrieve one authenticated, computed page from a previously offloaded result. |
+| `get_service_details` | read | Get full details for a single pricebook service, including pricing tiers and categories. |
 | `get_technician_shifts` | read | Get scheduled shifts for a technician. |
 | `inventory_receipts_list` | read | List ServiceTitan inventory receipts (incoming items from POs). |
 | `inventory_transfers_list` | read | List ServiceTitan inventory transfers between warehouses. |
 | `inventory_vendors_list` | read | List ServiceTitan inventory vendors. |
 | `inventory_warehouses_list` | read | List ServiceTitan warehouses (storage locations for inventory). |
+| `job_closeout_report` | read | Job closeout rollup of job details, appointments, and invoices. |
 | `jobs_hold_reasons_list` | read | List ServiceTitan Job Hold reasons. |
 | `list_campaigns` | read | List marketing campaigns. |
 | `list_customer_jobs` | read | List jobs for a customer. |
@@ -108,6 +116,7 @@ Instead of one shared token, users can sign in through Cloudflare Access with an
 | `list_memberships_expiring` | read | List active memberships expiring within the next N days. |
 | `list_non_job_events` | read | List non-job dispatch events (time-off, training, meetings) for technicians. |
 | `list_open_tasks` | read | List open (incomplete) tasks. |
+| `list_service_categories` | read | List pricebook categories and their nested subcategory trees. |
 | `list_technicians_available` | read | List the active technician roster from ServiceTitan Settings. |
 | `list_unpaid_invoices` | read | List invoices with an outstanding balance (unpaid or partially paid). |
 | `payroll_job_timesheets_list` | read | List ServiceTitan payroll job timesheets (dispatched/arrived/done times per technician per appointment), with minute-truncated drive_minutes and working_minutes. |
@@ -119,14 +128,31 @@ Instead of one shared token, users can sign in through Cloudflare Access with an
 | `search_pricebook_all` | read | Search the ServiceTitan pricebook across services, materials, and equipment. |
 | `search_pricebook_services` | read | Look up pricebook services by exact `code` (tries raw, UPPERCASE, and UPPERCASE-hyphenated variants) or list them one page at a time with active/page/pageSize. |
 | `search_pricebook_templates` | read | Find estimate templates and proposal templates whose name, internal name, or summary contains every word of query. |
+| `sell_estimate` | write | Mark an estimate Sold. Requires a `soldBy` technician ID. |
+| `st_add_invoice_line_item` | write | Add or update line items on an existing invoice, one PATCH per line item. |
+| `st_create_adjustment_invoice` | write | Create an adjustment invoice against a Posted or Exported parent invoice. Each SKU is checked live against the pricebook first. |
+| `st_create_material` | write | Create a pricebook material. Reads it back after the write and reports verified or mismatched fields. |
+| `st_create_service` | write | Create a pricebook service. Reads it back after the write and reports verified or mismatched fields. |
 | `st_get_capacity_slots` | read | Return bookable capacity SLOTS for a date range (the slot-finder used for live availability). |
+| `st_get_customer` | read | Get a single customer by ID. |
+| `st_get_pricebook` | read | List pricebook items by asset type (services, materials, or equipment). |
+| `st_list_appointments` | read | List appointments, including the scheduled start (the Jobs API has no scheduled date). |
+| `st_list_customers` | read | List customers with optional pagination and a modified-after filter. |
+| `st_list_jobs` | read | List jobs (not cached). |
 | `st_operation_status` | read | Recover a previously submitted write by operation_id, from a computed, local record of its current status. |
+| `st_patch_material` | write | Update a pricebook material by ID. Reads the material back after the write and reports verified or mismatched fields. |
+| `st_patch_service` | write | Update a pricebook service by ID. Reads the service back after the write and reports verified or mismatched fields. |
 | `st_report_results` | read | Retrieve a completed or partial persisted report result without polling or resubmitting. |
 | `st_report_start` | read | Start one ServiceTitan native report without long polling. |
 | `st_report_status` | read | Perform one bounded status check for a persisted report run. |
 | `st_run_report` | read | Run or discover ServiceTitan native reports. |
+| `unsell_estimate` | write | Revert a Sold estimate back to Open. |
 | `update_estimate_template` | write | Update an estimate template. |
 | `update_proposal_template` | write | Update a proposal template. |
+
+Write tools need the bearer-token (`MCP_TOKEN`) login. OAuth sessions are read-only.
+
+A write that ServiceTitan accepted but that the server could not read back is reported as outcome-unknown; check it in ServiceTitan before retrying.
 
 ## Write safety
 
@@ -156,9 +182,9 @@ A daily cron (`[triggers]` in `wrangler.toml.example`) deletes expired or old ro
 
   - `find_packages_with_item`: Which templates contain a given item is not available through ServiceTitan's public API — there is no reverse lookup from item to template.
   - `get_service_breakout`: The exploded contents of a service kit are not available through ServiceTitan's public API.
-  - `get_form_submission`: Form submission data is not available through ServiceTitan's public API.
   - `opportunities_list`: no public ServiceTitan endpoint
   - `opportunity_get`: no public ServiceTitan endpoint
+  - `assign_technicians`: Held back: ServiceTitan's appointment-assignment request contract (path and body field names) is not yet verified against a live tenant, and the two-step unassign/assign is not atomic.
 
 ## Forms kit
 

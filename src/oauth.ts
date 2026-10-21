@@ -1,5 +1,6 @@
 import { OAuthProvider, type OAuthHelpers, type AuthRequest, base64UrlToBytes, parseJwtJsonPart } from '@cloudflare/workers-oauth-provider';
 import type { Env } from './env';
+import type { OAuthFlowStateKind } from './durable/oauth-flow-state';
 
 const LOGIN_TTL = 600;
 const JWKS_CACHE_KEY = 'oauth:access-jwks';
@@ -147,6 +148,31 @@ async function verifyIdToken(idToken: string, env: Env): Promise<Record<string, 
 
 interface LoginState { oauthReqInfo: AuthRequest; codeVerifier: string; nonce: string; csrf: string }
 
+function flowState(env: Env, state: string) {
+  return env.OAUTH_FLOW_STATE.get(env.OAUTH_FLOW_STATE.idFromName(state));
+}
+
+async function putFlowState(env: Env, state: string, kind: OAuthFlowStateKind, value: unknown): Promise<void> {
+  await flowState(env, state).putState(kind, JSON.stringify(value), Date.now() + LOGIN_TTL * 1000);
+}
+
+// Every state this server issues is crypto.randomUUID(). Anything else is
+// refused as unknown BEFORE idFromName, so junk or oversized values from the
+// query string never name (and create) a Durable Object.
+const STATE_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+async function readFlowState<T>(env: Env, state: string, kind: OAuthFlowStateKind): Promise<T | null> {
+  if (!STATE_UUID.test(state)) return null;
+  const payload = await flowState(env, state).readState(kind, Date.now());
+  return payload ? JSON.parse(payload) as T : null;
+}
+
+async function consumeFlowState<T>(env: Env, state: string, kind: OAuthFlowStateKind): Promise<T | null> {
+  if (!STATE_UUID.test(state)) return null;
+  const payload = await flowState(env, state).consumeState(kind, Date.now());
+  return payload ? JSON.parse(payload) as T : null;
+}
+
 export async function handleOAuthRoute(request: Request, env: Env, url: URL): Promise<Response | null> {
   const { authorize, token: tokenUrl } = accessEndpoints(env);
   const callbackUrl = `${selfOrigin(env, request)}/callback`;
@@ -161,7 +187,7 @@ export async function handleOAuthRoute(request: Request, env: Env, url: URL): Pr
     const nonce = randB64url(16);
     const csrf = randB64url(16);
     const state = crypto.randomUUID();
-    await env.OAUTH_KV.put(`login:${state}`, JSON.stringify({ oauthReqInfo, codeVerifier, nonce, csrf } satisfies LoginState), { expirationTtl: LOGIN_TTL });
+    await putFlowState(env, state, 'login', { oauthReqInfo, codeVerifier, nonce, csrf } satisfies LoginState);
     const u = new URL(authorize);
     u.searchParams.set('client_id', env.ACCESS_CLIENT_ID);
     u.searchParams.set('redirect_uri', callbackUrl);
@@ -178,9 +204,8 @@ export async function handleOAuthRoute(request: Request, env: Env, url: URL): Pr
     const state = url.searchParams.get('state');
     const code = url.searchParams.get('code');
     if (!state || !code) return new Response('invalid_callback', { status: 400 });
-    const stored = (await env.OAUTH_KV.get(`login:${state}`, 'json')) as LoginState | null;
+    const stored = await consumeFlowState<LoginState>(env, state, 'login');
     if (!stored) return new Response('invalid_or_expired_state', { status: 400 });
-    await env.OAUTH_KV.delete(`login:${state}`);
     if (!stored.csrf || getCookie(request, CSRF_COOKIE) !== stored.csrf) return new Response('csrf_check_failed', { status: 403 });
     const { oauthReqInfo, codeVerifier, nonce } = stored;
     if (!oauthReqInfo.clientId) return new Response('invalid_oauth_request', { status: 400 });
@@ -205,17 +230,13 @@ export async function handleOAuthRoute(request: Request, env: Env, url: URL): Pr
     
     
     const approvalState = crypto.randomUUID();
-    await env.OAUTH_KV.put(
-      `approve:${approvalState}`,
-      JSON.stringify({
-        oauthReqInfo,
-        sub,
-        email,
-        name: (claims.name as string | undefined) ?? null,
-        upstreamExpiresIn: body.expires_in ?? null,
-      } satisfies ApprovalState),
-      { expirationTtl: LOGIN_TTL },
-    );
+    await putFlowState(env, approvalState, 'approve', {
+      oauthReqInfo,
+      sub,
+      email,
+      name: (claims.name as string | undefined) ?? null,
+      upstreamExpiresIn: body.expires_in ?? null,
+    } satisfies ApprovalState);
     return new Response(null, {
       status: 302,
       headers: {
@@ -238,13 +259,14 @@ export async function handleOAuthRoute(request: Request, env: Env, url: URL): Pr
     }
     if (!state) return new Response('invalid_request', { status: 400 });
 
-    const pending = (await env.OAUTH_KV.get(`approve:${state}`, 'json')) as ApprovalState | null;
+    // The POST consumes the parked state (single use, whichever way the user
+    // decided); the GET only reads it so the consent page can render.
+    const pending = isPost
+      ? await consumeFlowState<ApprovalState>(env, state, 'approve')
+      : await readFlowState<ApprovalState>(env, state, 'approve');
     if (!pending) return new Response('invalid_or_expired_state', { status: 400 });
 
     if (!isPost) return consentPage(state, pending.oauthReqInfo, pending.email);
-
-    
-    await env.OAUTH_KV.delete(`approve:${state}`);
 
     if (decision !== 'approve') {
       console.warn('[oauth] /approve: denied by user; client=', String(pending.oauthReqInfo.clientId ?? '?'));

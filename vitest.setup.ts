@@ -32,6 +32,16 @@ export abstract class WorkflowStep {
   waitForEvent = async <T,>(name: string, options: any): Promise<any> => ({});
 }
 
+// Minimal runtime stub for Durable Object classes imported by worker entrypoints.
+export class DurableObject<Env = unknown> {
+  protected ctx: DurableObjectState;
+  protected env: Env;
+  constructor(ctx: DurableObjectState, env: Env) {
+    this.ctx = ctx;
+    this.env = env;
+  }
+}
+
 // Provide a global mock so the tests can use it
 globalThis.WorkflowEntrypoint = WorkflowEntrypoint as any;
 globalThis.WorkflowStep = WorkflowStep as any;

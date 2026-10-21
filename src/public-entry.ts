@@ -13,6 +13,7 @@ import { corsOptionsFor } from './cors';
 import { backendName } from './backend';
 
 export { StRateLimiter } from './durable/st-rate-limiter';
+export { OAuthFlowState } from './durable/oauth-flow-state';
 
 export const PUBLIC_SERVICE_NAME = 'servicetitan-mcp-server';
 
@@ -131,7 +132,9 @@ export function buildPublicServer(env: Env, execCtx: ExecutionContext, reqCtx: R
   const visible = filterToolsForRole(PUBLIC_TOOLS, reqCtx.role);
   const scoped: RequestContext = { ...reqCtx, availableTools: visible.map((t) => t.name) };
   for (const tool of visible) registerTool(server, tool, env, execCtx, scoped);
-  compactToolListOnWire(server);
+  if (!compactToolListOnWire(server)) {
+    console.warn('compactToolListOnWire: could not wrap tools/list (SDK handler map missing or no tools registered), serving uncompacted tool list');
+  }
   registerResultResource(server, env, scoped);
   return server;
 }

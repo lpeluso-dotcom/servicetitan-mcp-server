@@ -11,6 +11,7 @@ export type McpErrorCode =
 
   | 'silent_noop'
   | 'field_mismatch' 
+  | 'partial_write'
   | 'amount_mismatch'
   | 'verify_unavailable';
 

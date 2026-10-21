@@ -22,7 +22,9 @@ id = "00000000000000000000000000000000"
 
 # Optional: per-user sign-in with Cloudflare Access instead of one shared
 # MCP_TOKEN (see README, "Optional: per-user sign-in with Cloudflare Access").
-# Uncomment and bind a second KV namespace to enable it.
+# Uncomment and bind a second KV namespace to enable it. Sign-in also needs the
+# OAUTH_FLOW_STATE Durable Object binding below; without it OAuth routes answer
+# 503 oauth_not_configured.
 # [[kv_namespaces]]
 # binding = "OAUTH_KV"
 # id = "00000000000000000000000000000000"
@@ -33,6 +35,14 @@ id = "00000000000000000000000000000000"
 name = "ST_RATE_LIMITER"
 class_name = "StRateLimiter"
 
+# Short-lived sign-in state for the optional Cloudflare Access flow. One
+# Durable Object per state value keeps login and consent state strongly
+# consistent (Workers KV is eventually consistent, so a fresh value could be
+# missing at the next edge). Harmless to keep bound if you skip OAuth.
+[[durable_objects.bindings]]
+name = "OAUTH_FLOW_STATE"
+class_name = "OAuthFlowState"
+
 [[migrations]]
 tag = "v1"
 # SQLite-backed storage (works on the free Workers plan — the older
@@ -41,13 +51,17 @@ tag = "v1"
 # it needs nothing SQLite-backed storage doesn't already provide.
 new_sqlite_classes = ["StRateLimiter"]
 
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["OAuthFlowState"]
+
 # Daily retention cleanup (deletes expired/old rows from this build's own
 # D1 — see README's "Data retention" section and RETENTION_DAYS below).
 [triggers]
 crons = ["0 7 * * *"]
 
 [vars]
-MCP_SERVICE_VERSION = "0.1.2"
+MCP_SERVICE_VERSION = "0.2.0"
 # "direct" calls the ServiceTitan API straight from this Worker using the
 # ST_CLIENT_ID / ST_CLIENT_SECRET / ST_APP_KEY secrets below. This build has
 # no proxy backend option — there is no service binding to any other Worker.
