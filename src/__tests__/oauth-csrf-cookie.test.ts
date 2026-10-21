@@ -23,6 +23,7 @@ vi.mock('@cloudflare/workers-oauth-provider', () => {
 });
 
 import { handleOAuthRoute } from '../oauth';
+import { oauthFlowStateStub } from './oauth-flow-state-stub';
 
 describe('OAuth CSRF cookie', () => {
   it('sets a __Host- prefixed cookie on /authorize', async () => {
@@ -30,6 +31,7 @@ describe('OAuth CSRF cookie', () => {
       ACCESS_ISSUER: 'https://team.cloudflareaccess.com/cdn-cgi/access/sso/oidc/abc123',
       ACCESS_CLIENT_ID: 'client-id',
       SELF_ORIGIN: 'https://servicetitan-mcp-server.example.workers.dev',
+      OAUTH_FLOW_STATE: oauthFlowStateStub({}),
       OAUTH_KV: { put: vi.fn(async () => {}) },
       OAUTH_PROVIDER: {
         parseAuthRequest: vi.fn(async () => ({ clientId: 'c1', scope: ['openid'] })),

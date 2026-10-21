@@ -1,6 +1,6 @@
 {
   "name": "servicetitan-mcp-server",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "MCP server for the ServiceTitan public API, deployed to your own Cloudflare account.",
   "license": "MIT",
   "private": true,
@@ -12,11 +12,11 @@
   },
   "dependencies": {
     "@cloudflare/workers-oauth-provider": "^0.10.3",
-    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@modelcontextprotocol/sdk": "1.32.0",
     "agents": "^0.22.0",
     "zod": "^4.5.4",
-    "@modelcontextprotocol/client": "2.0.0",
-    "@modelcontextprotocol/server": "2.0.0"
+    "@modelcontextprotocol/client": "2.3.0",
+    "@modelcontextprotocol/server": "2.3.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20260907.1",
@@ -25,5 +25,14 @@
     "vitest": "^4.1.11",
     "wrangler": "^4.129.1"
   },
-  "author": "Luke Peluso"
+  "author": "Luke Peluso",
+  "overrides": {
+    "hono": "4.13.11",
+    "agents": {
+      "@modelcontextprotocol/client": "2.3.0",
+      "@modelcontextprotocol/core": "2.3.0",
+      "@modelcontextprotocol/sdk": "1.32.0",
+      "@modelcontextprotocol/server": "2.3.0"
+    }
+  }
 }

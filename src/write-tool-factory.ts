@@ -10,6 +10,27 @@ import type { Env } from './env';
 
 export type StWriteMethod = 'POST' | 'PATCH' | 'PUT' | 'DELETE';
 
+export interface WriteVerifyInput<TArgs> {
+  env: Env;
+  args: TArgs;
+  
+  endpoint: string;
+  
+  payload: unknown;
+  
+  result: unknown;
+  actor: string;
+  correlation: string;
+}
+
+export interface WriteVerifyResult {
+  verified: boolean;
+  
+  mismatchedFields?: string[];
+  
+  note?: string;
+}
+
 export interface WriteToolSpec<TArgs> {
   name: string;
   description: string;
@@ -31,6 +52,8 @@ export interface WriteToolSpec<TArgs> {
   invalidatesCache?: (args: TArgs) => string[];
 
   tokenTtlMs?: number;
+
+  verify?: (input: WriteVerifyInput<TArgs>) => Promise<WriteVerifyResult>;
 }
 
 const DRY_RUN_ZOD = z
@@ -116,7 +139,29 @@ export function defineWriteTool<TArgs extends BaseWriteArgs>(
         const namespaces = spec.invalidatesCache(args);
         await Promise.all(namespaces.map((ns) => cachePurgeNamespace(env, ns)));
       }
-      return { dryRun: false, tool: spec.name, result, correlation };
+      if (!spec.verify) return { dryRun: false, tool: spec.name, result, correlation };
+
+      // The write already landed. A failed read-back must never turn that into
+      // a thrown error (the caller would retry a write that succeeded); it is
+      // reported as written-but-unverified instead.
+      let check: WriteVerifyResult;
+      try {
+        check = await spec.verify({ env, args, endpoint, payload, result, actor, correlation });
+      } catch (e) {
+        check = { verified: false, note: `read-back failed${e instanceof McpError ? ` (${e.code})` : ''}` };
+      }
+      return {
+        dryRun: false,
+        tool: spec.name,
+        result,
+        correlation,
+        verified: check.verified,
+        outcome: {
+          remotely_verified: check.verified,
+          ...(check.mismatchedFields && check.mismatchedFields.length > 0 ? { mismatched_fields: check.mismatchedFields } : {}),
+          ...(check.note ? { note: check.note } : {}),
+        },
+      };
     },
   };
 }

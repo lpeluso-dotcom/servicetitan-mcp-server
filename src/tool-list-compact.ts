@@ -21,11 +21,21 @@ function strip(node: unknown, isRoot: boolean): unknown {
 
 type RequestHandler = (request: unknown, extra: unknown) => Promise<unknown>;
 
+/**
+ * Wrap the SDK's tools/list handler so every inputSchema is compacted on the wire.
+ * The SDK has no public hook for this, so this reaches into its private handler
+ * map. It fails soft: if an SDK upgrade renames or restructures those internals,
+ * it returns false instead of throwing, and the caller serves the uncompacted
+ * (still correct) tool list rather than failing every request. Call AFTER tools
+ * are registered.
+ *
+ * @returns true if the wrap was installed, false if it could not be.
+ */
 export function compactToolListOnWire(server: McpServer): boolean {
   const handlers = (server.server as unknown as { _requestHandlers?: Map<string, RequestHandler> })._requestHandlers;
   if (!(handlers instanceof Map)) return false;
   const original = handlers.get('tools/list');
-  if (!original) return false; 
+  if (typeof original !== 'function') return false;
   handlers.set('tools/list', async (request, extra) => {
     const result = (await original(request, extra)) as { tools?: Array<Record<string, unknown>> };
     return {

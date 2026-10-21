@@ -22,16 +22,21 @@ import { st_get_capacity_slots } from './dispatch/st_get_capacity_slots';
 
 import { list_estimates_job } from './estimates/list_estimates_job';
 import { get_estimate } from './estimates/get_estimate';
+import { sell_estimate, unsell_estimate, dismiss_estimate } from './estimates/update_estimate_status';
 
 import { get_invoice } from './invoicing/get_invoice';
 import { list_invoices_job } from './invoicing/list_invoices_job';
 import { get_invoice_balance } from './invoicing/get_invoice_balance';
 import { list_unpaid_invoices } from './invoicing/list_unpaid_invoices';
+import { st_add_invoice_line_item } from './invoicing/st_add_invoice_line_item';
+import { st_create_adjustment_invoice } from './invoicing/st_create_adjustment_invoice';
 
 import { list_memberships_active } from './memberships/list_memberships_active';
 import { list_memberships_expiring } from './memberships/list_memberships_expiring';
+import { create_recurring_service } from './memberships/create_recurring_service';
 
 import { get_call } from './calls_forms/get_call';
+import { get_form_submission } from './calls_forms/get_form_submission';
 
 import { inventory_vendors_list } from './inventory/inventory_vendors_list';
 import { inventory_warehouses_list } from './inventory/inventory_warehouses_list';
@@ -68,6 +73,23 @@ import { delete_proposal_template } from './sales/delete_proposal_template';
 import { find_technician_by_name_public } from './public/find_technician_by_name';
 import { list_technicians_available_public } from './public/list_technicians_available';
 
+import { list_service_categories } from './pricebook/list_service_categories';
+import { get_service_details } from './pricebook/get_service_details';
+import { get_configurable_equipment_children } from './pricebook/get_configurable_equipment_children';
+import { st_get_pricebook } from './st_get_pricebook';
+import { st_patch_service } from './st_patch_service';
+import { st_create_service } from './st_create_service';
+import { st_patch_material } from './st_patch_material';
+import { st_create_material } from './st_create_material';
+
+import { st_list_jobs } from './st_list_jobs';
+import { st_list_customers } from './st_list_customers';
+import { st_get_customer } from './st_get_customer';
+import { st_list_appointments } from './st_list_appointments';
+
+import { customer_snapshot } from './composites/customer_snapshot';
+import { job_closeout_report } from './composites/job_closeout_report';
+
 import { search_pricebook_all_public } from './public/search_pricebook_all';
 import { search_pricebook_services_public, search_materials_public } from './public/pricebook_code_search';
 
@@ -84,19 +106,25 @@ export const PUBLIC_TOOLS: readonly ToolDef<any>[] = [
   
   get_capacity, get_technician_shifts, list_non_job_events, st_get_capacity_slots,
   
-  list_estimates_job, get_estimate,
+  list_estimates_job, get_estimate, sell_estimate, unsell_estimate, dismiss_estimate,
   
-  get_invoice, list_invoices_job, get_invoice_balance, list_unpaid_invoices,
+  get_invoice, list_invoices_job, get_invoice_balance, list_unpaid_invoices, st_add_invoice_line_item, st_create_adjustment_invoice,
   
-  list_memberships_active, list_memberships_expiring,
+  list_memberships_active, list_memberships_expiring, create_recurring_service,
   
-  get_call,
+  get_call, get_form_submission,
   
   inventory_vendors_list, inventory_warehouses_list, inventory_receipts_list, inventory_transfers_list,
   
   payroll_payrolls_list, payroll_non_job_timesheets_list, payroll_location_rates_list, payroll_settings_get, payroll_job_timesheets_list_public,
   
   search_pricebook_all_public, search_pricebook_services_public, search_materials_public,
+  
+  list_service_categories, get_service_details, get_configurable_equipment_children, st_get_pricebook,
+  
+  st_patch_service, st_create_service, st_patch_material, st_create_material,
+  
+  st_list_jobs, st_list_customers, st_get_customer, st_list_appointments,
   
   list_campaigns, get_campaign_performance,
   
@@ -109,13 +137,16 @@ export const PUBLIC_TOOLS: readonly ToolDef<any>[] = [
   search_pricebook_templates_public, get_proposal_tiers_public, create_proposal_template, update_proposal_template, delete_proposal_template,
   
   find_technician_by_name_public, list_technicians_available_public,
+  
+  customer_snapshot, job_closeout_report,
 ];
 
 export const CUT_FROM_RELEASE_1: Readonly<Record<string, string>> = {
   find_packages_with_item: 'Which templates contain a given item is not available through ServiceTitan\'s public API — there is no reverse lookup from item to template.',
   get_service_breakout: 'The exploded contents of a service kit are not available through ServiceTitan\'s public API.',
-  get_form_submission: 'Form submission data is not available through ServiceTitan\'s public API.',
-  'sku-resolve': 'Helper for an adjustment-invoice write tool not included in release 1.',
   opportunities_list: 'no public ServiceTitan endpoint',
   opportunity_get: 'no public ServiceTitan endpoint',
+  // The source (src/tools/jobs/assign_technicians.ts) and its unit tests stay;
+  // only the registration is withheld.
+  assign_technicians: "Held back: ServiceTitan's appointment-assignment request contract (path and body field names) is not yet verified against a live tenant, and the two-step unassign/assign is not atomic.",
 };

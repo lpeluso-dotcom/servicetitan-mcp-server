@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { z } from 'zod';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { compactInputSchema, compactToolListOnWire } from '../tool-list-compact';
 
 const MAX = Number.MAX_SAFE_INTEGER;
@@ -80,5 +82,28 @@ describe('compactToolListOnWire', () => {
   it('returns false when a real McpServer has no tools registered', () => {
     const server = new McpServer({ name: 'test', version: '0.0.0' });
     expect(compactToolListOnWire(server)).toBe(false);
+  });
+
+  it('returns false when the tools/list entry is not a callable handler', () => {
+    const handlers = new Map<string, unknown>([['tools/list', { notAFunction: true }]]);
+    const fakeServer = { server: { _requestHandlers: handlers } } as any;
+    expect(() => compactToolListOnWire(fakeServer)).not.toThrow();
+    expect(compactToolListOnWire(fakeServer)).toBe(false);
+    expect(handlers.get('tools/list')).toEqual({ notAFunction: true });
+  });
+
+  it('serves the uncompacted list through a real client when the wrap is not installed', async () => {
+    const server = new McpServer({ name: 'test', version: '0.0.0' });
+    server.registerTool('t', { description: 'd', inputSchema: { n: z.number().int() } }, async () => ({ content: [] }));
+    // No compactToolListOnWire call: this is the state a fail-soft caller is left in.
+    const [a, b] = InMemoryTransport.createLinkedPair();
+    const client = new Client({ name: 'c', version: '0' });
+    await Promise.all([server.connect(a), client.connect(b)]);
+    try {
+      const listed = await client.listTools();
+      expect(listed.tools.map((t) => t.name)).toEqual(['t']);
+    } finally {
+      await client.close();
+    }
   });
 });
