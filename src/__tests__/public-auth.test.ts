@@ -70,3 +70,14 @@ describe('resolvePublicAuth', () => {
     expect((await resolvePublicAuth(req('bearer  s3cret  extra'), { MCP_TOKEN: 's3cret' } as any)).authenticated).toBe(false);
   });
 });
+
+
+describe('dedicated configuration admin credential', () => {
+  it('only elevates a distinct configured admin token', async () => {
+    const env:any={MCP_TOKEN:'operational',MCP_CONFIG_ADMIN_TOKEN:'config-admin'};
+    expect((await resolvePublicAuth(req('Bearer config-admin'),env)).role).toBe('admin');
+    expect((await resolvePublicAuth(req('Bearer operational'),env)).role).toBe('default');
+    expect((await resolvePublicAuth(req('Bearer config-admin'),{...env,MCP_LOCKDOWN:'true'})).role).toBe('lockdown');
+    expect((await resolvePublicAuth(req('Bearer operational'),{...env,MCP_CONFIG_ADMIN_TOKEN:'operational'})).authenticated).toBe(false);
+  });
+});

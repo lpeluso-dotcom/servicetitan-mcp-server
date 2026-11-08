@@ -9,6 +9,10 @@ import type { BackendEnv } from './backend/env';
 import type { OAuthFlowState } from './durable/oauth-flow-state';
 
 export interface Env extends BackendEnv {
+  TOOL_PROFILES_JSON?: string;
+  CONFIGURATION_WRITES_ENABLED?: string;
+  MCP_CONFIG_ADMIN_TOKEN?: string;
+
   // Bindings
   DB: D1Database;
   STATE_KV: KVNamespace;

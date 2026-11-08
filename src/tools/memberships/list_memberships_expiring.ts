@@ -1,11 +1,12 @@
 import { z } from 'zod';
-import { readST } from '../../st';
+import { readSTPaged } from '../../st';
 import type { ToolDef } from '../index';
 import { defaultShaper } from '../../response-shape';
+import { assertRowsMatchFilters } from '../filter-guard';
 
 interface Args { windowDays: number; customerId?: number; page?: number; pageSize?: number }
 
-
+// ST response fields kept. See list_memberships_active for rationale.
 const ESSENTIAL_FIELDS = [
   'id', 'status', 'customerId', 'locationId', 'membershipTypeId',
   'businessUnitId', 'from', 'to', 'duration', 'billingFrequency',
@@ -18,11 +19,21 @@ function trim(m: Record<string, unknown>): Record<string, unknown> {
   return out;
 }
 
+// Semantics pinned: 'to' BETWEEN now AND now+windowDays AND status='Active'.
+// Do NOT use renewedById — unreliable per local operations notes.
+//
+// ST's memberships endpoint has no end-date filter: activeThroughOnOrAfter /
+// activeThroughBefore are not in its contract and were silently ignored, so
+// the tool returned every Active membership as "expiring". The window is now
+// applied here over a full scan of Active memberships, then paged locally.
+const SCAN_PAGE_SIZE = 500;
+const SCAN_MAX_PAGES = 20;
+
 export const list_memberships_expiring: ToolDef<Args> = {
   isWrite: false,
   permission: "staff",
   name: 'list_memberships_expiring',
-  description: 'List active memberships expiring within the next N days. Uses expirationDate range filter (NOT renewedById — unreliable). Response is trimmed to essential fields; client-side filtered to status=Active. Source: live ST. Default page size 50, max 100 (capped to keep response under the MCP token limit).',
+  description: 'List active memberships whose end date (`to`) falls within the next N days, soonest first. ST cannot filter by end date, so the tool scans all Active memberships (up to 10,000; _partial if the scan hits that cap) and applies the window itself. Response is trimmed to essential fields. Source: live ST. Default page size 50, max 100 (capped to keep response under the MCP token limit).',
   zodSchema: {
     windowDays: z.number().int().positive().describe('Number of days ahead to look for expiring memberships (e.g. 30 = expiring within 30 days)'),
     customerId: z.number().int().positive().optional().describe('Filter by customer ID'),
@@ -31,31 +42,42 @@ export const list_memberships_expiring: ToolDef<Args> = {
   },
   stEndpoint: { method: 'GET', path: '/memberships/v2/tenant/{tid}/memberships', source: 'live' },
   async handler(env, args, { actor, correlation }) {
-    const now = new Date();
-    const windowEnd = new Date(now.getTime() + args.windowDays * 24 * 60 * 60 * 1000);
+    const now = Date.now();
+    const windowEnd = now + args.windowDays * 24 * 60 * 60 * 1000;
+    const page = args.page ?? 1;
+    const pageSize = args.pageSize ?? 50;
 
-    const query: Record<string, unknown> = {
-      status: 'Active',
-      activeThroughOnOrAfter: now.toISOString(),
-      activeThroughBefore: windowEnd.toISOString(),
-      customerId: args.customerId,
-      page: args.page ?? 1,
-      pageSize: args.pageSize ?? 50,
-    };
-
-    const data = await readST<{ data?: Record<string, unknown>[] }>(
+    // ST takes `customerIds` (plural) and silently ignores `customerId`.
+    const scan = await readSTPaged<Record<string, unknown>>(
       env,
       { actor, correlation },
       `/memberships/v2/tenant/000000000/memberships`,
-      query,
+      { status: 'Active', customerIds: args.customerId },
+      { pageSize: SCAN_PAGE_SIZE, maxPages: SCAN_MAX_PAGES },
     );
-    const raw = data.data ?? [];
-    const activeOnly = raw.filter((m) => m.status === 'Active');
+    assertRowsMatchFilters('list_memberships_expiring', scan.rows, [
+      { param: 'customerId', want: args.customerId, get: (m) => m.customerId },
+    ], correlation);
+
+    const endMs = (m: Record<string, unknown>) => (typeof m.to === 'string' ? Date.parse(m.to) : NaN);
+    const inWindow = scan.rows
+      .filter((m) => m.status === 'Active')
+      .filter((m) => {
+        const t = endMs(m);
+        return Number.isFinite(t) && t >= now && t <= windowEnd;
+      })
+      .sort((a, b) => endMs(a) - endMs(b));
+    const start = (page - 1) * pageSize;
+
     return {
-      memberships: activeOnly.map(trim),
+      memberships: inWindow.slice(start, start + pageSize).map(trim),
       windowDays: args.windowDays,
+      total_in_window: inWindow.length,
+      has_more: start + pageSize < inWindow.length,
+      page,
+      _scanned: scan.rows.length,
+      _partial: scan.hitCap ? `scan stopped at ${scan.rows.length} Active memberships; some expiring ones may be missing` : undefined,
       _source: 'live',
-      _filtered: raw.length !== activeOnly.length ? { received: raw.length, kept: activeOnly.length } : undefined,
     };
   },
   transformResult: defaultShaper,

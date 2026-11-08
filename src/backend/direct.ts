@@ -1,3 +1,4 @@
+import { readBounded } from '../request-budget';
 import type { BackendEnv } from './env';
 import { getStAccessToken, invalidateStAccessToken } from './st-oauth';
 import { rewriteTenantPlaceholders, PUBLIC_TENANT_ID_PLACEHOLDER } from '../tenant';
@@ -13,13 +14,16 @@ export function stApiBase(env: Pick<BackendEnv, 'ST_ENV'>): string {
 
 export function stApiUrl(env: Pick<BackendEnv, 'ST_ENV'> & { ST_TENANT_ID?: string }, endpoint: string): URL | null {
   const tenantId = env.ST_TENANT_ID?.trim();
-  if (!tenantId || tenantId === PUBLIC_TENANT_ID_PLACEHOLDER) {
+  if (!tenantId || !/^\d+$/.test(tenantId) || tenantId === PUBLIC_TENANT_ID_PLACEHOLDER) {
     throw new McpError('config_error', 'ST_TENANT_ID is not configured; set it to your ServiceTitan tenant id');
   }
   if (!endpoint.startsWith('/') || endpoint.startsWith('//') || endpoint.includes('\\')) return null;
   const base = stApiBase(env);
   const url = new URL(rewriteTenantPlaceholders({ ST_TENANT_ID: env.ST_TENANT_ID ?? '' }, endpoint), base);
-  return url.origin === base ? url : null;
+  // Credentials are scoped to one configured tenant, including after URL normalization.
+  const match = /^\/[a-z-]+\/v\d+\/tenant\/(\d+)\//.exec(url.pathname);
+  if (url.origin !== base || url.hash || !match || match[1] !== tenantId || /%|[\r\n\t#]/.test(endpoint.split('?')[0])) return null;
+  return url;
 }
 
 function jsonError(status: number, error: string, message: string): Response {
@@ -46,7 +50,11 @@ async function stHeaders(env: DirectEnv, withBody: boolean): Promise<Record<stri
 }
 
 async function stFetch(env: DirectEnv, url: string, init: RequestInit): Promise<Response> {
-  const res = await fetch(url, init);
+  const res = await fetch(url, { ...init, redirect: 'manual' });
+  if (res.status >= 300 && res.status < 400) {
+    await res.body?.cancel();
+    throw new McpError('upstream_error', 'ServiceTitan API redirect refused');
+  }
   if (res.status === 401) invalidateStAccessToken(env);
   return res;
 }
@@ -68,7 +76,7 @@ async function handleRead(env: DirectEnv, req: Request, url: URL): Promise<Respo
 }
 
 async function wrapStWriteResponse(res: Response, endpoint: string, method: string): Promise<Response> {
-  const text = await res.text();
+  const text = await readBounded(res);
   let response: unknown;
   try {
     response = JSON.parse(text);

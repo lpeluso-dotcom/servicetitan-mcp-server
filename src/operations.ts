@@ -9,9 +9,9 @@ interface OperationRow { id: string; owner: string; role: string; tool: string; 
 export function operationEnvelope(row: OperationRow) {
   return { operation_id: row.id, state: row.state, ...(row.result ? { result: JSON.parse(row.result) } : {}), ...(row.instance_id ? { upstream_operation_id: row.instance_id } : {}), recovery: 'Use st_operation_status with operation_id. Do not submit another write while the outcome is unknown.' };
 }
-export async function operationStatus(env: Env, id: string, owner: string, role: string, allowedTools?: readonly string[]) {
+export async function operationStatus(env: Env, id: string, owner: string, role: string, allowedTools?: readonly string[], availableTools?: readonly string[]) {
   const row = await env.DB.prepare('SELECT * FROM mcp_operations WHERE id = ? AND owner = ? AND role = ?').bind(id, owner, role).first<OperationRow>();
-  if (!row || (allowedTools && !allowedTools.includes(row.tool))) throw new McpError('not_found', 'Operation not found or not authorized');
+  if (!row || (allowedTools && !allowedTools.includes(row.tool)) || (availableTools && !availableTools.includes(row.tool))) throw new McpError('not_found', 'Operation not found or not authorized');
   if (row.state === 'running' && Date.now() - row.updated_at > 650_000) row.state = 'outcome-unknown';
   return operationEnvelope(row);
 }

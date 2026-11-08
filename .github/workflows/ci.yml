@@ -25,3 +25,13 @@ jobs:
         working-directory: forms/generator
       - run: cp wrangler.toml.example wrangler.toml
       - run: npx wrangler deploy --dry-run --outdir /tmp/wrangler-dry-run-bundle
+      - name: Audit dependencies
+        run: npm audit --audit-level=high
+      - name: Scan published source for credentials
+        run: |
+          VERSION=8.30.1
+          curl -sSfLO "https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}/gitleaks_${VERSION}_linux_x64.tar.gz"
+          curl -sSfLO "https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}/gitleaks_${VERSION}_checksums.txt"
+          grep " gitleaks_${VERSION}_linux_x64.tar.gz$" "gitleaks_${VERSION}_checksums.txt" | sha256sum --check --strict
+          tar -xzf "gitleaks_${VERSION}_linux_x64.tar.gz" -C /tmp gitleaks
+          /tmp/gitleaks dir . --redact

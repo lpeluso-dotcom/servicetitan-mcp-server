@@ -56,13 +56,13 @@ describe('customer_snapshot', () => {
     const env = makeEnv(liveOk([]));
     const result: any = await customer_snapshot.handler(env, { customerId: 100 }, CTX);
     const eps = endpoints(env);
-    expect(eps).toHaveLength(6);
+    expect(eps).toHaveLength(5);
     expect(eps).toContain('/crm/v2/tenant/000000000/customers/100');
     expect(eps).toContain('/accounting/v2/tenant/000000000/invoices?customerId=100');
     expect(eps).toContain('/crm/v2/tenant/000000000/locations?customerId=100');
     expect(eps).toContain('/jpm/v2/tenant/000000000/jobs?customerId=100');
-    expect(eps).toContain('/sales/v2/tenant/000000000/estimates?customerId=100');
-    expect(eps).toContain('/memberships/v2/tenant/000000000/memberships?customerId=100&status=Active');
+    expect(eps.some(p => p.includes('/estimates'))).toBe(false); // No locations: no unscoped estimate query.
+    expect(eps).toContain('/memberships/v2/tenant/000000000/memberships?customerIds=100&status=Active');
     expect(result.customerId).toBe(100);
     for (const k of ['customer', 'locations', 'jobs', 'memberships', 'estimates', 'invoices']) {
       expect(result).toHaveProperty(k);
@@ -152,11 +152,11 @@ describe('customer_snapshot', () => {
     const first: any = await customer_snapshot.handler(env, { customerId: 42 }, CTX);
     expect(first._partial).toBe(true);
     expect(first.memberships).toBeNull();
-    expect(env.ST_TRANSPORT.fetch).toHaveBeenCalledTimes(6);
+    expect(env.ST_TRANSPORT.fetch).toHaveBeenCalledTimes(5);
 
     membershipsFail = false;
     const second: any = await customer_snapshot.handler(env, { customerId: 42 }, { ...CTX, correlation: 'next-corr' });
-    expect(env.ST_TRANSPORT.fetch).toHaveBeenCalledTimes(12);
+    expect(env.ST_TRANSPORT.fetch).toHaveBeenCalledTimes(10);
     expect(second._partial).toBe(false);
     expect(second._failures).toEqual([]);
     expect(second.memberships).toEqual([]);

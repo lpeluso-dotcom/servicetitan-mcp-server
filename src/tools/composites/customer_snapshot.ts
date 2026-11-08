@@ -5,6 +5,55 @@ import type { ToolDef } from '../types';
 import { PUBLIC_TENANT_ID_PLACEHOLDER } from '../../tenant';
 import { excludeFields, limitArrays } from '../../response-shape';
 
+import type { Env } from '../../env';
+import { assertRowsMatchFilters } from '../filter-guard';
+
+const ESTIMATE_LOCATIONS_MAX = 10;
+
+type Row = Record<string, unknown>;
+
+async function estimatesForCustomer(
+  env: Env,
+  h: Record<string, string>,
+  tenant: string,
+  customerId: number,
+  locationsResp: Promise<Response>,
+  correlation: string,
+  signal: AbortSignal,
+): Promise<Response> {
+  const locResp = (await locationsResp).clone();
+  if (!locResp.ok) {
+    const err = new Error(`locations lookup failed (${locResp.status}), so estimates cannot be scoped to the customer`);
+    err.name = 'DependencyError';
+    throw err;
+  }
+  const locBody = await locResp.json<{ data?: Row[]; hasMore?: boolean }>();
+  const locationIds = (locBody.data ?? [])
+    .map((l) => l.id)
+    .filter((id): id is number => typeof id === 'number');
+  const scoped = locationIds.slice(0, ESTIMATE_LOCATIONS_MAX);
+  let hasMore = locBody?.hasMore === true || locationIds.length > scoped.length;
+
+  const pages = await Promise.all(
+    scoped.map(async (locationId) => {
+      const r = await stReadGuarded(env, h, `/sales/v2/tenant/${tenant}/estimates?locationId=${locationId}`, signal);
+      if (!r.ok) return r;
+      const body = await r.json<{ data?: Row[]; hasMore?: boolean }>();
+      const rows = body.data ?? [];
+      assertRowsMatchFilters('customer_snapshot.estimates', rows, [
+        { param: 'locationId', want: locationId, get: (e) => e.locationId },
+      ], correlation);
+      if (body?.hasMore === true) hasMore = true;
+      return rows;
+    }),
+  );
+  const failed = pages.find((p): p is Response => p instanceof Response);
+  if (failed) return failed;
+
+  const estimates = (pages as Row[][]).flat().filter((e) => e.customerId === customerId);
+  return new Response(JSON.stringify({ data: estimates, hasMore }), { status: 200 });
+}
+
 interface Args { customerId: number }
 
 // Fires 6 parallel reads. Nothing is cached: a failed or truncated arm is
@@ -46,12 +95,14 @@ export const customer_snapshot: ToolDef<Args> = {
     const tenant = PUBLIC_TENANT_ID_PLACEHOLDER;
     const signal = AbortSignal.timeout(15_000);
 
+    const locations = stReadGuarded(env, h, `/crm/v2/tenant/${tenant}/locations?customerId=${customerId}`, signal);
+
     const fanout = await gatherFetchesWithTruncation([
       { name: 'customer',    promise: stReadGuarded(env, h, `/crm/v2/tenant/${tenant}/customers/${customerId}`, signal) },
-      { name: 'locations',   promise: stReadGuarded(env, h, `/crm/v2/tenant/${tenant}/locations?customerId=${customerId}`, signal) },
+      { name: 'locations',   promise: locations.then(r => r.clone()) },
       { name: 'jobs',        promise: stReadGuarded(env, h, `/jpm/v2/tenant/${tenant}/jobs?customerId=${customerId}`, signal) },
-      { name: 'memberships', promise: stReadGuarded(env, h, `/memberships/v2/tenant/${tenant}/memberships?customerId=${customerId}&status=Active`, signal) },
-      { name: 'estimates',   promise: stReadGuarded(env, h, `/sales/v2/tenant/${tenant}/estimates?customerId=${customerId}`, signal) },
+      { name: 'memberships', promise: stReadGuarded(env, h, `/memberships/v2/tenant/${tenant}/memberships?customerIds=${customerId}&status=Active`, signal) },
+      { name: 'estimates',   promise: estimatesForCustomer(env, h, tenant, customerId, locations, correlation, signal) },
       { name: 'invoices',    promise: stReadGuarded(env, h, `/accounting/v2/tenant/${tenant}/invoices?customerId=${customerId}`, signal) },
     ]);
 

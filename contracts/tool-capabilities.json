@@ -1,0 +1,6428 @@
+{
+  "schema_version": 1,
+  "tools": [
+    {
+      "name": "add_customer_note",
+      "write": true,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "POST",
+        "path": "/crm/v2/tenant/{tid}/customers/{customerId}/notes",
+        "source": "live"
+      },
+      "roles": [
+        "default",
+        "admin"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST customer ID"
+          },
+          "note": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Note text to append"
+          },
+          "dryRun": {
+            "default": true,
+            "description": "true (default) = preview + token; false = execute write",
+            "type": "boolean"
+          },
+          "confirmation_token": {
+            "description": "Token from prior dryRun=true call",
+            "type": "string"
+          }
+        },
+        "required": [
+          "customerId",
+          "note",
+          "dryRun"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "add_job_note",
+      "write": true,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "POST",
+        "path": "/jpm/v2/tenant/{tid}/jobs/{jobId}/notes",
+        "source": "live"
+      },
+      "roles": [
+        "default",
+        "admin"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST job ID"
+          },
+          "note": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Note text to append"
+          },
+          "dryRun": {
+            "default": true,
+            "description": "true (default) = preview + token; false = execute write",
+            "type": "boolean"
+          },
+          "confirmation_token": {
+            "description": "Token from prior dryRun=true call",
+            "type": "string"
+          }
+        },
+        "required": [
+          "jobId",
+          "note",
+          "dryRun"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "ap_bill_get",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/accounting/v2/tenant/{tid}/ap-bills/{billId}",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "billId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST AP bill ID"
+          }
+        },
+        "required": [
+          "billId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "ap_bills_list",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/accounting/v2/tenant/{tid}/ap-bills",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "billNumber": {
+            "description": "Vendor invoice / bill number as entered on the bill",
+            "type": "string"
+          },
+          "jobNumber": {
+            "description": "ST job number the bill is costed to",
+            "type": "string"
+          },
+          "syncStatus": {
+            "description": "Accounting sync status",
+            "type": "string",
+            "enum": [
+              "Pending",
+              "Posted",
+              "Exported"
+            ]
+          },
+          "dateFrom": {
+            "description": "ISO date; bills dated on or after",
+            "type": "string"
+          },
+          "dateTo": {
+            "description": "ISO date; bills dated on or before",
+            "type": "string"
+          },
+          "modifiedOnOrAfter": {
+            "description": "ISO 8601; bills modified at or after this instant",
+            "type": "string"
+          },
+          "page": {
+            "description": "Page number, default 1",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "description": "Page size, default 25, max 100",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 100
+          },
+          "includeTotal": {
+            "description": "Ask ST for totalCount; returned as total_count (null when omitted)",
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "booking_get",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/crm/v2/tenant/{tid}/bookings/{id}",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "bookingId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST booking ID"
+          }
+        },
+        "required": [
+          "bookingId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "bookings_list",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/crm/v2/tenant/{tid}/bookings",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "externalId": {
+            "description": "Booking provider external ID",
+            "type": "string"
+          },
+          "createdOnOrAfter": {
+            "description": "ISO 8601; bookings created at or after this instant",
+            "type": "string"
+          },
+          "modifiedOnOrAfter": {
+            "description": "ISO 8601; bookings modified at or after this instant",
+            "type": "string"
+          },
+          "page": {
+            "description": "Page number, default 1",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "description": "Page size, default 25, max 100",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 100
+          },
+          "includeTotal": {
+            "description": "Ask ST for totalCount; returned as total_count (null when omitted)",
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "call_recording_get",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/telecom/v2/tenant/{tid}/calls/{id}/recording",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "callId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST call ID (leadCall.id from get_call or id from calls_list)"
+          }
+        },
+        "required": [
+          "callId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "call_voicemail_get",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/telecom/v2/tenant/{tid}/calls/{id}/voicemail",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "callId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST call ID (leadCall.id from get_call or id from calls_list)"
+          }
+        },
+        "required": [
+          "callId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "calls_list",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/telecom/v2/tenant/{tid}/calls",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "createdOnOrAfter": {
+            "description": "ISO 8601; calls received at or after this instant",
+            "type": "string"
+          },
+          "createdBefore": {
+            "description": "ISO 8601; calls received before this instant",
+            "type": "string"
+          },
+          "modifiedOnOrAfter": {
+            "description": "ISO 8601; calls modified at or after this instant",
+            "type": "string"
+          },
+          "campaignId": {
+            "description": "Filter by marketing campaign ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "agentId": {
+            "description": "Filter by CSR / agent ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "phoneNumberCalled": {
+            "description": "Tracking number dialled, digits only",
+            "type": "string"
+          },
+          "minDuration": {
+            "description": "Minimum call length in seconds",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "activeOnly": {
+            "description": "ST activeOnly flag; omit for ST default",
+            "type": "boolean"
+          },
+          "page": {
+            "description": "Page number, default 1",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "description": "Page size, default 25, max 100",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 100
+          },
+          "includeTotal": {
+            "description": "Ask ST for totalCount; returned as total_count (null when omitted)",
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "compare_configuration_snapshots",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "local:configuration-diff",
+        "source": "computed"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "before": {
+            "type": "object",
+            "properties": {
+              "schema_version": {
+                "type": "number",
+                "const": 1
+              },
+              "tenant_id": {
+                "type": "string",
+                "pattern": "^\\d+$"
+              },
+              "captured_at": {
+                "type": "string"
+              },
+              "complete": {
+                "type": "boolean"
+              },
+              "sections": {
+                "type": "object",
+                "properties": {
+                  "job_types": {
+                    "type": "object",
+                    "properties": {
+                      "complete": {
+                        "type": "boolean"
+                      },
+                      "records": {
+                        "maxItems": 1000,
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "exclusiveMinimum": 0,
+                              "maximum": 9007199254740991
+                            }
+                          },
+                          "required": [
+                            "id"
+                          ],
+                          "additionalProperties": {}
+                        }
+                      },
+                      "pages": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "error": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "complete",
+                      "records",
+                      "pages"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "business_units": {
+                    "type": "object",
+                    "properties": {
+                      "complete": {
+                        "type": "boolean"
+                      },
+                      "records": {
+                        "maxItems": 1000,
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "exclusiveMinimum": 0,
+                              "maximum": 9007199254740991
+                            }
+                          },
+                          "required": [
+                            "id"
+                          ],
+                          "additionalProperties": {}
+                        }
+                      },
+                      "pages": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "error": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "complete",
+                      "records",
+                      "pages"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "tag_types": {
+                    "type": "object",
+                    "properties": {
+                      "complete": {
+                        "type": "boolean"
+                      },
+                      "records": {
+                        "maxItems": 1000,
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "exclusiveMinimum": 0,
+                              "maximum": 9007199254740991
+                            }
+                          },
+                          "required": [
+                            "id"
+                          ],
+                          "additionalProperties": {}
+                        }
+                      },
+                      "pages": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "error": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "complete",
+                      "records",
+                      "pages"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "schema_version",
+              "tenant_id",
+              "captured_at",
+              "complete",
+              "sections"
+            ],
+            "additionalProperties": false
+          },
+          "after": {
+            "type": "object",
+            "properties": {
+              "schema_version": {
+                "type": "number",
+                "const": 1
+              },
+              "tenant_id": {
+                "type": "string",
+                "pattern": "^\\d+$"
+              },
+              "captured_at": {
+                "type": "string"
+              },
+              "complete": {
+                "type": "boolean"
+              },
+              "sections": {
+                "type": "object",
+                "properties": {
+                  "job_types": {
+                    "type": "object",
+                    "properties": {
+                      "complete": {
+                        "type": "boolean"
+                      },
+                      "records": {
+                        "maxItems": 1000,
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "exclusiveMinimum": 0,
+                              "maximum": 9007199254740991
+                            }
+                          },
+                          "required": [
+                            "id"
+                          ],
+                          "additionalProperties": {}
+                        }
+                      },
+                      "pages": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "error": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "complete",
+                      "records",
+                      "pages"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "business_units": {
+                    "type": "object",
+                    "properties": {
+                      "complete": {
+                        "type": "boolean"
+                      },
+                      "records": {
+                        "maxItems": 1000,
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "exclusiveMinimum": 0,
+                              "maximum": 9007199254740991
+                            }
+                          },
+                          "required": [
+                            "id"
+                          ],
+                          "additionalProperties": {}
+                        }
+                      },
+                      "pages": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "error": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "complete",
+                      "records",
+                      "pages"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "tag_types": {
+                    "type": "object",
+                    "properties": {
+                      "complete": {
+                        "type": "boolean"
+                      },
+                      "records": {
+                        "maxItems": 1000,
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer",
+                              "exclusiveMinimum": 0,
+                              "maximum": 9007199254740991
+                            }
+                          },
+                          "required": [
+                            "id"
+                          ],
+                          "additionalProperties": {}
+                        }
+                      },
+                      "pages": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      },
+                      "error": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "complete",
+                      "records",
+                      "pages"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "schema_version",
+              "tenant_id",
+              "captured_at",
+              "complete",
+              "sections"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "before",
+          "after"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "configuration_snapshot",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/jpm/v2/tenant/{tid}/job-types",
+        "variants": [
+          "/jpm/v2/tenant/{tid}/job-types",
+          "/settings/v2/tenant/{tid}/business-units",
+          "/settings/v2/tenant/{tid}/tag-types"
+        ],
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "sections": {
+            "default": [
+              "job_types",
+              "business_units",
+              "tag_types"
+            ],
+            "minItems": 1,
+            "maxItems": 3,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "job_types",
+                "business_units",
+                "tag_types"
+              ]
+            }
+          },
+          "pageSize": {
+            "default": 200,
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 200
+          },
+          "maxPages": {
+            "default": 5,
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 5
+          }
+        },
+        "required": [
+          "sections",
+          "pageSize",
+          "maxPages"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "create_estimate_template",
+      "write": true,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "POST",
+        "path": "/sales/v2/tenant/{tid}/estimate-templates",
+        "source": "live"
+      },
+      "roles": [
+        "default",
+        "admin"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Template display name"
+          },
+          "internalName": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Internal-only name (not shown to customers). REQUIRED by ST at create time despite being optional on GET."
+          },
+          "summary": {
+            "description": "Short summary/description of the template",
+            "type": "string"
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "Dynamic",
+              "Static"
+            ],
+            "description": "Pricing mode — Dynamic computes at invoice time; Static uses fixed prices"
+          },
+          "businessUnitId": {
+            "description": "Business unit this template belongs to",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "skuId": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "Pricebook SKU ID (service/material/equipment ID) this line references."
+                },
+                "skuType": {
+                  "type": "string",
+                  "enum": [
+                    "Service",
+                    "Material",
+                    "Equipment"
+                  ],
+                  "description": "Type of the referenced SKU."
+                },
+                "quantity": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "description": "Quantity of this line item."
+                },
+                "isAddOn": {
+                  "description": "Whether this item is an optional add-on. Default false.",
+                  "type": "boolean"
+                },
+                "chargeable": {
+                  "description": "Whether this item is billable. Default true.",
+                  "type": "boolean"
+                },
+                "allowDiscounts": {
+                  "description": "Whether discounts apply to this item. Defaults to true when omitted — pass false explicitly to exclude an item from discounting.",
+                  "type": "boolean"
+                },
+                "memo": {
+                  "description": "Internal memo for this line item.",
+                  "type": "string"
+                },
+                "order": {
+                  "description": "Display order within the template.",
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": [
+                "skuId",
+                "skuType",
+                "quantity"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Line items to include in the template"
+          },
+          "dryRun": {
+            "default": true,
+            "description": "true (default) = preview + token; false = execute write",
+            "type": "boolean"
+          },
+          "confirmation_token": {
+            "description": "Token from prior dryRun=true call",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "internalName",
+          "mode",
+          "items",
+          "dryRun"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "create_job_type",
+      "write": true,
+      "permission": "admin",
+      "admin_only": true,
+      "endpoint": {
+        "method": "POST",
+        "path": "/jpm/v2/tenant/{tid}/job-types",
+        "source": "live"
+      },
+      "roles": [
+        "admin"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "changes": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "businessUnitIds": {
+                "anyOf": [
+                  {
+                    "maxItems": 500,
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "skills": {
+                "anyOf": [
+                  {
+                    "maxItems": 500,
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "tagTypeIds": {
+                "anyOf": [
+                  {
+                    "maxItems": 500,
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "priority": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "duration": {
+                "anyOf": [
+                  {
+                    "type": "integer",
+                    "minimum": -9007199254740991,
+                    "maximum": 9007199254740991
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "soldThreshold": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "class": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "summary": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "noCharge": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "enforceRecurringServiceEventSelection": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "invoiceSignaturesRequired": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "defaultEstimateSoldAction": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "customFieldTypeIds": {
+                "anyOf": [
+                  {
+                    "maxItems": 500,
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          "dryRun": {
+            "default": true,
+            "type": "boolean"
+          },
+          "confirmation_token": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "changes",
+          "dryRun"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "create_proposal_template",
+      "write": true,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "POST",
+        "path": "/sales/v2/tenant/{tid}/proposal-templates",
+        "source": "live"
+      },
+      "roles": [
+        "default",
+        "admin"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255,
+            "description": "Template name (unique in ServiceTitan)"
+          },
+          "description": {
+            "description": "Customer-facing description",
+            "type": "string"
+          },
+          "proposalTypeId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "Proposal type id"
+          },
+          "businessUnitIds": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            },
+            "description": "Business units that can use this template"
+          },
+          "estimateAssignments": {
+            "minItems": 1,
+            "maxItems": 10,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "order": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "Tier position, 1 = first"
+                },
+                "estimateTemplateId": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "Estimate template for this tier"
+                },
+                "proposalTypeOptionId": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991,
+                  "description": "Proposal type option (tier slot) id"
+                }
+              },
+              "required": [
+                "order",
+                "estimateTemplateId",
+                "proposalTypeOptionId"
+              ],
+              "additionalProperties": false
+            },
+            "description": "One entry per tier"
+          },
+          "active": {
+            "description": "Active flag (ServiceTitan default when omitted)",
+            "type": "boolean"
+          },
+          "categoryIds": {
+            "description": "NOT SUPPORTED by the public API; returns a validation error.",
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "dryRun": {
+            "default": true,
+            "description": "true (default) = preview + token; false = execute write",
+            "type": "boolean"
+          },
+          "confirmation_token": {
+            "description": "Token from prior dryRun=true call",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "proposalTypeId",
+          "businessUnitIds",
+          "estimateAssignments",
+          "dryRun"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "create_tag_type",
+      "write": true,
+      "permission": "admin",
+      "admin_only": true,
+      "endpoint": {
+        "method": "POST",
+        "path": "/settings/v2/tenant/{tid}/tag-types",
+        "source": "live"
+      },
+      "roles": [
+        "admin"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "changes": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "color": {
+                "type": "string",
+                "pattern": "^#([0-9A-Fa-f]{6})$"
+              },
+              "code": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "maxLength": 20
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "importance": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "Medium",
+                      "High"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "isConversionOpportunity": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "allowToUseOnTimesheetActivity": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
+              "isVisibleOnDispatchBoard": {
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "name",
+              "color"
+            ],
+            "additionalProperties": false
+          },
+          "dryRun": {
+            "default": true,
+            "type": "boolean"
+          },
+          "confirmation_token": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "changes",
+          "dryRun"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "create_task",
+      "write": true,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "POST",
+        "path": "/taskmanagement/v2/tenant/{tid}/tasks",
+        "source": "live"
+      },
+      "roles": [
+        "default",
+        "admin"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Task name/headline"
+          },
+          "jobId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST job ID to link the task to"
+          },
+          "body": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Task body / detailed description (required by ST)"
+          },
+          "reportedById": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "Employee ID that reported/created the task (required by ST)"
+          },
+          "businessUnitId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "Business Unit ID for routing/visibility (required by ST)"
+          },
+          "employeeTaskTypeId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "Task type ID from /taskmanagement/v2/.../task-types (required by ST)"
+          },
+          "employeeTaskSourceId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "Task source ID from /taskmanagement/v2/.../task-sources (required by ST)"
+          },
+          "reportedDate": {
+            "description": "ISO 8601 timestamp; defaults to now if omitted",
+            "type": "string"
+          },
+          "isClosed": {
+            "description": "Open/closed state on creation; defaults to false",
+            "type": "boolean"
+          },
+          "priority": {
+            "description": "Task priority (ST enum); defaults to Normal",
+            "type": "string",
+            "enum": [
+              "Normal",
+              "High",
+              "Urgent"
+            ]
+          },
+          "dueDate": {
+            "description": "Due date (ISO 8601 date string)",
+            "type": "string"
+          },
+          "assignedToId": {
+            "description": "Employee ID to assign the task to",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "dryRun": {
+            "default": true,
+            "description": "true (default) = preview + token; false = execute write",
+            "type": "boolean"
+          },
+          "confirmation_token": {
+            "description": "Token from prior dryRun=true call",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "jobId",
+          "body",
+          "reportedById",
+          "businessUnitId",
+          "employeeTaskTypeId",
+          "employeeTaskSourceId",
+          "dryRun"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "customer_snapshot",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/crm/v2/tenant/{tid}/customers/{id}",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST customer ID"
+          }
+        },
+        "required": [
+          "customerId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "delete_estimate_template",
+      "write": true,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "DELETE",
+        "path": "/sales/v2/tenant/{tid}/estimate-templates/{templateId}",
+        "source": "live"
+      },
+      "roles": [
+        "default",
+        "admin"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "templateId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST estimate template ID"
+          },
+          "dryRun": {
+            "default": true,
+            "description": "true (default) = preview + token; false = execute write",
+            "type": "boolean"
+          },
+          "confirmation_token": {
+            "description": "Token from prior dryRun=true call",
+            "type": "string"
+          }
+        },
+        "required": [
+          "templateId",
+          "dryRun"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "delete_proposal_template",
+      "write": true,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "DELETE",
+        "path": "/sales/v2/tenant/{tid}/proposal-templates/{templateId}",
+        "source": "live"
+      },
+      "roles": [
+        "default",
+        "admin"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "templateId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "Proposal template id"
+          },
+          "dryRun": {
+            "default": true,
+            "description": "true (default) = preview + token; false = execute write",
+            "type": "boolean"
+          },
+          "confirmation_token": {
+            "description": "Token from prior dryRun=true call",
+            "type": "string"
+          }
+        },
+        "required": [
+          "templateId",
+          "dryRun"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "dismiss_estimate",
+      "write": true,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "PUT",
+        "path": "/sales/v2/tenant/{tid}/estimates/{estimateId}/dismiss",
+        "source": "live"
+      },
+      "roles": [
+        "default",
+        "admin"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "estimateId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST estimate ID"
+          },
+          "dryRun": {
+            "default": true,
+            "description": "true (default) = preview + token; false = execute write",
+            "type": "boolean"
+          },
+          "confirmation_token": {
+            "description": "Token from prior dryRun=true call",
+            "type": "string"
+          }
+        },
+        "required": [
+          "estimateId",
+          "dryRun"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "equipment_installed_get",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/equipmentsystems/v2/tenant/{tid}/installed-equipment/{id}",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "equipmentId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST installed-equipment ID (not the pricebook equipment SKU id)"
+          }
+        },
+        "required": [
+          "equipmentId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "equipment_installed_list",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/equipmentsystems/v2/tenant/{tid}/installed-equipment",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "locationId": {
+            "description": "Filter by ST location ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "customerId": {
+            "description": "Filter by ST customer ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "active": {
+            "description": "ST active filter; omit for ST default (active only)",
+            "type": "string",
+            "enum": [
+              "True",
+              "Any",
+              "False"
+            ]
+          },
+          "modifiedOnOrAfter": {
+            "description": "ISO 8601; records modified at or after this instant",
+            "type": "string"
+          },
+          "createdOnOrAfter": {
+            "description": "ISO 8601; records created at or after this instant",
+            "type": "string"
+          },
+          "page": {
+            "description": "Page number, default 1",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "description": "Page size, default 25, max 100",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 100
+          },
+          "includeTotal": {
+            "description": "Ask ST for totalCount; returned as total_count (null when omitted)",
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "equipment_systems_list",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/equipmentsystems/v2/tenant/{tid}/equipment-systems",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "modifiedOnOrAfter": {
+            "description": "ISO 8601; systems modified at or after this instant",
+            "type": "string"
+          },
+          "createdOnOrAfter": {
+            "description": "ISO 8601; systems created at or after this instant",
+            "type": "string"
+          },
+          "page": {
+            "description": "Page number, default 1",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "description": "Page size, default 25, max 100",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 100
+          },
+          "includeTotal": {
+            "description": "Ask ST for totalCount; returned as total_count (null when omitted)",
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "estimate_reference_evidence",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/sales/v2/tenant/{tid}/estimates",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "estimateIds": {
+            "minItems": 1,
+            "maxItems": 20,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        },
+        "required": [
+          "estimateIds"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "find_customer",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/crm/v2/tenant/{tid}/customers",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "Customer name (partial match)",
+            "type": "string"
+          },
+          "phone": {
+            "description": "Phone number. Digits or formatted (\"5551234567\", \"(555) 123-4567\", \"555-123-4567\") — ST normalizes all three.",
+            "type": "string"
+          },
+          "email": {
+            "description": "NOT SUPPORTED by ServiceTitan on this endpoint — passing it returns a validation error. Look the customer up by phone or name instead.",
+            "type": "string"
+          },
+          "page": {
+            "description": "Page number, default 1",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "description": "Page size, default 10, max 50",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 50
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "find_technician_by_name",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/settings/v2/tenant/{tid}/technicians",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Technician name, full or partial, or a numeric technicianId as a string."
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_business_unit",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/settings/v2/tenant/{tid}/business-units/{id}",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "externalDataApplicationGuid": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_call",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/telecom/v3/tenant/{tid}/calls",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "callId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST call ID — matches leadCall.id in the returned row, not the row's top-level id"
+          }
+        },
+        "required": [
+          "callId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_campaign_performance",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/marketing/v2/tenant/{tid}/campaigns/{campaignId}/costs",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "campaignId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST campaign ID"
+          },
+          "from": {
+            "description": "Start date for the period (YYYY-MM-DD)",
+            "type": "string"
+          },
+          "to": {
+            "description": "End date for the period (YYYY-MM-DD)",
+            "type": "string"
+          }
+        },
+        "required": [
+          "campaignId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_capacity",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "POST",
+        "path": "/dispatch/v2/tenant/{tid}/capacity",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "businessUnitIds": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            },
+            "description": "Business unit IDs to check capacity for"
+          },
+          "startDate": {
+            "type": "string",
+            "description": "Start date (YYYY-MM-DD)"
+          },
+          "endDate": {
+            "type": "string",
+            "description": "End date (YYYY-MM-DD)"
+          },
+          "skillBasedAvailability": {
+            "description": "Use skill-based availability matching (default: false)",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "businessUnitIds",
+          "startDate",
+          "endDate"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_configurable_equipment_children",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/pricebook/v2/tenant/{tid}/equipment/{parentEquipmentId}",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "parentEquipmentId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST pricebook equipment ID of the parent (isConfigurableEquipment=true)"
+          }
+        },
+        "required": [
+          "parentEquipmentId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_customer",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/crm/v2/tenant/{tid}/customers/{customerId}",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST customer ID"
+          }
+        },
+        "required": [
+          "customerId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_customer_locations",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/crm/v2/tenant/{tid}/locations",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST customer ID"
+          },
+          "active": {
+            "description": "Filter to active locations only",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "customerId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_customer_membership",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/memberships/v2/tenant/{tid}/memberships",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST customer ID"
+          },
+          "active": {
+            "description": "true = only memberships with status Active; omit or false = every status",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "customerId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_estimate",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/sales/v2/tenant/{tid}/estimates/{estimateId}",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "estimateId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST estimate ID"
+          }
+        },
+        "required": [
+          "estimateId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_estimate_template",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/sales/v2/tenant/{tid}/estimate-templates/{templateId}",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "templateId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST estimate template ID"
+          }
+        },
+        "required": [
+          "templateId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_form_submission",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/forms/v2/tenant/{tid}/submissions",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "formId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ServiceTitan form ID whose submissions are scanned"
+          },
+          "submissionId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ServiceTitan form submission ID to find"
+          }
+        },
+        "required": [
+          "formId",
+          "submissionId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_invoice",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/accounting/v2/tenant/{tid}/invoices",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "invoiceId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST invoice ID"
+          }
+        },
+        "required": [
+          "invoiceId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_invoice_balance",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/accounting/v2/tenant/{tid}/invoices",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "invoiceId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST invoice ID"
+          }
+        },
+        "required": [
+          "invoiceId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_job",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/jpm/v2/tenant/{tid}/jobs/{id}",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST job ID"
+          }
+        },
+        "required": [
+          "jobId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_job_appointments",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/jpm/v2/tenant/{tid}/appointments",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST job ID"
+          }
+        },
+        "required": [
+          "jobId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_job_history",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/jpm/v2/tenant/{tid}/jobs/{id}/history",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST job ID"
+          },
+          "page": {
+            "description": "Page number, default 1",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "description": "Page size, default 100, max 500",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 500
+          }
+        },
+        "required": [
+          "jobId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_job_type",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/jpm/v2/tenant/{tid}/job-types/{id}",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "externalDataApplicationGuid": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_proposal_tiers",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/sales/v2/tenant/{tid}/proposal-templates/{id}",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "proposalId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "Proposal template id"
+          }
+        },
+        "required": [
+          "proposalId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_result_page",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "local:result-pages",
+        "source": "computed"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "result_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "cursor": {
+            "description": "Page cursor; default 0",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "result_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_service_details",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/pricebook/v2/tenant/{tid}/services/{serviceId}",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "serviceId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST pricebook service ID"
+          }
+        },
+        "required": [
+          "serviceId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_tag_type",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/settings/v2/tenant/{tid}/tag-types",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "get_technician_shifts",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/dispatch/v2/tenant/{tid}/technician-shifts",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "technicianId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST technician ID"
+          },
+          "startsOnOrAfter": {
+            "description": "Filter shifts starting on or after this date (ISO 8601)",
+            "type": "string"
+          },
+          "startsBefore": {
+            "description": "Filter shifts starting before this date (ISO 8601)",
+            "type": "string"
+          },
+          "page": {
+            "default": 1,
+            "description": "Page number",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "default": 50,
+            "description": "Page size, max 200",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 200
+          }
+        },
+        "required": [
+          "technicianId",
+          "page",
+          "pageSize"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "inventory_receipts_list",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/inventory/v2/tenant/{tid}/receipts",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "vendorId": {
+            "description": "Filter by vendor ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "warehouseId": {
+            "description": "Filter by warehouse ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "page": {
+            "description": "Page number, default 1",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "description": "Page size, default 25, max 100",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 100
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "inventory_transfers_list",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/inventory/v2/tenant/{tid}/transfers",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "fromWarehouseId": {
+            "description": "Filter by source warehouse ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "toWarehouseId": {
+            "description": "Filter by destination warehouse ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "page": {
+            "description": "Page number, default 1",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "description": "Page size, default 25, max 100",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 100
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "inventory_vendors_list",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/inventory/v2/tenant/{tid}/vendors",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "active": {
+            "description": "Filter to active=true or active=false; omit for both",
+            "type": "boolean"
+          },
+          "page": {
+            "description": "Page number, default 1",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "description": "Page size, default 25, max 100",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 100
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "inventory_warehouses_list",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/inventory/v2/tenant/{tid}/warehouses",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "active": {
+            "description": "Filter to active=true or active=false; omit for both",
+            "type": "boolean"
+          },
+          "page": {
+            "description": "Page number, default 1",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "description": "Page size, default 25, max 100",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 100
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "job_closeout_report",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/jpm/v2/tenant/{tid}/jobs/{id}",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST job ID"
+          }
+        },
+        "required": [
+          "jobId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "jobs_hold_reasons_list",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/jpm/v2/tenant/{tid}/job-hold-reasons",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "active": {
+            "description": "Filter by active flag. true → active only; false → inactive only; omit → all.",
+            "type": "boolean"
+          },
+          "page": {
+            "description": "Page number, default 1",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "description": "Page size, default 50, max 200",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 200
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "lead_get",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/crm/v2/tenant/{tid}/leads/{id}",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "leadId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST lead ID"
+          }
+        },
+        "required": [
+          "leadId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "leads_list",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/crm/v2/tenant/{tid}/leads",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "description": "Filter by ST customer ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "status": {
+            "description": "Lead status",
+            "type": "string",
+            "enum": [
+              "Open",
+              "Dismissed",
+              "Converted"
+            ]
+          },
+          "isProspect": {
+            "description": "true = leads with no existing customer record",
+            "type": "boolean"
+          },
+          "createdOnOrAfter": {
+            "description": "ISO 8601; leads created at or after this instant",
+            "type": "string"
+          },
+          "modifiedOnOrAfter": {
+            "description": "ISO 8601; leads modified at or after this instant",
+            "type": "string"
+          },
+          "page": {
+            "description": "Page number, default 1",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "description": "Page size, default 25, max 100",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 100
+          },
+          "includeTotal": {
+            "description": "Ask ST for totalCount; returned as total_count (null when omitted)",
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_business_units",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/settings/v2/tenant/{tid}/business-units",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "ids": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "active": {
+            "type": "string",
+            "enum": [
+              "True",
+              "Any",
+              "False"
+            ]
+          },
+          "page": {
+            "default": 1,
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "default": 50,
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 200
+          },
+          "includeTotal": {
+            "type": "boolean"
+          },
+          "createdOnOrAfter": {
+            "type": "string"
+          },
+          "modifiedOnOrAfter": {
+            "type": "string"
+          },
+          "externalDataApplicationGuid": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          }
+        },
+        "required": [
+          "page",
+          "pageSize"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_campaigns",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/marketing/v2/tenant/{tid}/campaigns",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "active": {
+            "description": "Filter by active status (default: all)",
+            "type": "boolean"
+          },
+          "page": {
+            "default": 1,
+            "description": "Page number",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "default": 50,
+            "description": "Page size, max 200",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 200
+          }
+        },
+        "required": [
+          "page",
+          "pageSize"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_customer_jobs",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/jpm/v2/tenant/{tid}/jobs",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST customer ID"
+          },
+          "status": {
+            "description": "Filter by job status (e.g. \"Completed\", \"InProgress\")",
+            "type": "string"
+          },
+          "page": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 200
+          }
+        },
+        "required": [
+          "customerId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_estimate_templates",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/sales/v2/tenant/{tid}/estimate-templates",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "active": {
+            "description": "Filter by active flag. Default \"Any\" (see description for why active-only is not the default).",
+            "type": "string",
+            "enum": [
+              "Any",
+              "True",
+              "False"
+            ]
+          },
+          "businessUnitId": {
+            "description": "Filter by business unit ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "page": {
+            "default": 1,
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "default": 50,
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 50
+          }
+        },
+        "required": [
+          "page",
+          "pageSize"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_estimates_job",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/sales/v2/tenant/{tid}/estimates",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST job ID"
+          },
+          "page": {
+            "default": 1,
+            "description": "Page number",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "default": 50,
+            "description": "Page size, max 200",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 200
+          }
+        },
+        "required": [
+          "jobId",
+          "page",
+          "pageSize"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_invoices_job",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/accounting/v2/tenant/{tid}/invoices",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST job ID"
+          },
+          "page": {
+            "default": 1,
+            "description": "Page number",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "default": 50,
+            "description": "Page size, max 200",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 200
+          }
+        },
+        "required": [
+          "jobId",
+          "page",
+          "pageSize"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_job_types",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/jpm/v2/tenant/{tid}/job-types",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "minDuration": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "maxDuration": {
+            "type": "integer",
+            "minimum": -9007199254740991,
+            "maximum": 9007199254740991
+          },
+          "priority": {
+            "type": "string"
+          },
+          "ids": {
+            "type": "string"
+          },
+          "page": {
+            "default": 1,
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "default": 50,
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 200
+          },
+          "includeTotal": {
+            "type": "boolean"
+          },
+          "active": {
+            "type": "string",
+            "enum": [
+              "True",
+              "Any",
+              "False"
+            ]
+          },
+          "createdOnOrAfter": {
+            "type": "string"
+          },
+          "modifiedOnOrAfter": {
+            "type": "string"
+          },
+          "externalDataApplicationGuid": {
+            "type": "string",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+          }
+        },
+        "required": [
+          "page",
+          "pageSize"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_jobs_today",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/jpm/v2/tenant/{tid}/appointments",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "status": {
+            "description": "Filter by job status (e.g. \"Scheduled\", \"InProgress\")",
+            "type": "string"
+          },
+          "businessUnitId": {
+            "description": "Filter by business unit ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "businessUnitName": {
+            "description": "Filter by business unit name (resolved against the live ServiceTitan business-unit list).",
+            "type": "string",
+            "minLength": 1
+          },
+          "technicianId": {
+            "description": "Filter by assigned technician ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "technicianName": {
+            "description": "Filter by technician name (resolved against the live ServiceTitan technician roster).",
+            "type": "string",
+            "minLength": 1
+          },
+          "page": {
+            "description": "Deprecated/ignored — pagination is automatic.",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "description": "Deprecated/ignored — pagination is automatic.",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 200
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_memberships_active",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/memberships/v2/tenant/{tid}/memberships",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "description": "Filter by customer ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "locationId": {
+            "description": "Not supported: ST has no location filter on memberships. Rejected; pass customerId and read locationId on each row.",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "page": {
+            "default": 1,
+            "description": "Page number",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "default": 50,
+            "description": "Page size, max 100 (capped to keep response under MCP token limit)",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "page",
+          "pageSize"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_memberships_expiring",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/memberships/v2/tenant/{tid}/memberships",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "windowDays": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "Number of days ahead to look for expiring memberships (e.g. 30 = expiring within 30 days)"
+          },
+          "customerId": {
+            "description": "Filter by customer ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "page": {
+            "default": 1,
+            "description": "Page number",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "default": 50,
+            "description": "Page size, max 100 (capped to keep response under MCP token limit)",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "windowDays",
+          "page",
+          "pageSize"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_non_job_events",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/dispatch/v2/tenant/{tid}/non-job-appointments",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "technicianId": {
+            "description": "Filter by technician ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "startsOnOrAfter": {
+            "description": "Filter events starting on or after this date (ISO 8601)",
+            "type": "string"
+          },
+          "startsBefore": {
+            "description": "Filter events starting before this date (ISO 8601)",
+            "type": "string"
+          },
+          "page": {
+            "default": 1,
+            "description": "Page number",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "default": 50,
+            "description": "Page size, max 200",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 200
+          }
+        },
+        "required": [
+          "page",
+          "pageSize"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_open_tasks",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/taskmanagement/v2/tenant/{tid}/tasks",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "description": "Filter by job ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "assignedToId": {
+            "description": "Filter by assigned employee ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "page": {
+            "default": 1,
+            "description": "Page number",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "default": 50,
+            "description": "Page size, max 200",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 200
+          }
+        },
+        "required": [
+          "page",
+          "pageSize"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_service_categories",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/pricebook/v2/tenant/{tid}/categories",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "active": {
+            "description": "Filter by active status (default: all)",
+            "type": "boolean"
+          },
+          "page": {
+            "default": 1,
+            "description": "Page number",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "default": 25,
+            "description": "Page size, max 200; reduce for large nested trees",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 200
+          }
+        },
+        "required": [
+          "page",
+          "pageSize"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_tag_types",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/settings/v2/tenant/{tid}/tag-types",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "page": {
+            "default": 1,
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "default": 50,
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 200
+          },
+          "includeTotal": {
+            "type": "boolean"
+          },
+          "active": {
+            "type": "string",
+            "enum": [
+              "True",
+              "Any",
+              "False"
+            ]
+          },
+          "createdOnOrAfter": {
+            "type": "string"
+          },
+          "modifiedOnOrAfter": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "page",
+          "pageSize"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_technicians_available",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/settings/v2/tenant/{tid}/technicians",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "date": {
+            "description": "Accepted for compatibility; ServiceTitan cannot filter the roster by date (returns a warning).",
+            "type": "string"
+          },
+          "businessUnitId": {
+            "description": "Accepted for compatibility; the roster cannot be filtered by business unit (returns a warning).",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "businessUnitName": {
+            "description": "Accepted for compatibility; the roster cannot be filtered by business unit (returns a warning).",
+            "type": "string",
+            "minLength": 1
+          },
+          "page": {
+            "default": 1,
+            "description": "Page number",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "default": 50,
+            "description": "Page size, max 200",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 200
+          }
+        },
+        "required": [
+          "page",
+          "pageSize"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "list_unpaid_invoices",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/accounting/v2/tenant/{tid}/invoices",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "businessUnitId": {
+            "description": "Filter by business unit ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "customerId": {
+            "description": "Filter by customer ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "page": {
+            "default": 1,
+            "description": "Page number",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "default": 50,
+            "description": "Page size, max 200",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 200
+          }
+        },
+        "required": [
+          "page",
+          "pageSize"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "payment_get",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/accounting/v2/tenant/{tid}/payments",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "paymentId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST payment ID"
+          }
+        },
+        "required": [
+          "paymentId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "payments_list",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/accounting/v2/tenant/{tid}/payments",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "description": "Filter by ST customer ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "invoiceId": {
+            "description": "Only payments applied to this invoice ID (sent as appliedToInvoiceIds)",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "businessUnitId": {
+            "description": "Filter by business unit ID (sent as businessUnitIds)",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "modifiedOnOrAfter": {
+            "description": "ISO 8601; payments modified at or after this instant",
+            "type": "string"
+          },
+          "createdOnOrAfter": {
+            "description": "ISO 8601; payments created at or after this instant",
+            "type": "string"
+          },
+          "page": {
+            "description": "Page number, default 1",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "description": "Page size, default 25, max 100",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 100
+          },
+          "includeTotal": {
+            "description": "Ask ST for totalCount; returned as total_count (null when omitted)",
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "payroll_job_timesheets_list",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/payroll/v2/tenant/{tid}/jobs/timesheets",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "description": "One job (uses the per-job endpoint; no paging).",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "modifiedOnOrAfter": {
+            "description": "ISO 8601 timestamp for the tenant-wide list.",
+            "type": "string"
+          },
+          "technicianId": {
+            "description": "NOT SUPPORTED by ServiceTitan here; returns a validation error.",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "appointmentId": {
+            "description": "NOT SUPPORTED by ServiceTitan here; returns a validation error.",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "arrivedOnOrAfter": {
+            "description": "NOT SUPPORTED by ServiceTitan here; returns a validation error.",
+            "type": "string"
+          },
+          "arrivedOnOrBefore": {
+            "description": "NOT SUPPORTED by ServiceTitan here; returns a validation error.",
+            "type": "string"
+          },
+          "page": {
+            "description": "Page number, default 1.",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "description": "Page size, default 100, max 500.",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 500
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "payroll_location_rates_list",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/payroll/v2/tenant/{tid}/locations/rates",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "active": {
+            "description": "Filter to active=true or active=false; omit for both",
+            "type": "boolean"
+          },
+          "locationId": {
+            "description": "Filter by location ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "page": {
+            "description": "Page number, default 1",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "description": "Page size, default 25, max 100",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 100
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "payroll_non_job_timesheets_list",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/payroll/v2/tenant/{tid}/non-job-timesheets",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "employeeId": {
+            "description": "Filter to one employee. Applied CLIENT-SIDE after fetch — ST has no working server-side filter on this endpoint (employeeId singular errors; employeeIds/technicianId(s)/ids plural forms are all silently ignored). See the paging note in the tool description.",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "timesheetCodeId": {
+            "description": "Filter to one timesheet code. Applied CLIENT-SIDE after fetch — ST silently ignores timesheetCodeId/timesheetCodeIds server-side on this endpoint. See the paging note in the tool description.",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "fromDate": {
+            "description": "ISO 8601 timestamp. Maps to modifiedOnOrAfter (ST silently ignores startsOnOrAfter on this endpoint — this filters by last-MODIFIED time, not the timesheet's own startedOn).",
+            "type": "string"
+          },
+          "toDate": {
+            "description": "ISO 8601 timestamp. Maps to modifiedOnOrBefore (ST silently ignores endsOnOrBefore on this endpoint — this filters by last-MODIFIED time, not the timesheet's own endedOn).",
+            "type": "string"
+          },
+          "page": {
+            "description": "Page number, default 1",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "description": "Page size, default 25, max 100",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 100
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "payroll_payrolls_list",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/payroll/v2/tenant/{tid}/payrolls",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "employeeId": {
+            "description": "Filter by employee ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "payrollPeriodId": {
+            "description": "Filter by payroll period ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "status": {
+            "description": "Filter by payroll status",
+            "type": "string",
+            "enum": [
+              "Pending",
+              "Approved",
+              "Posted"
+            ]
+          },
+          "page": {
+            "description": "Page number, default 1",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "description": "Page size, default 25, max 100",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 100
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "payroll_settings_get",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/payroll/v2/tenant/{tid}/payroll-settings",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "purchase_order_get",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/inventory/v2/tenant/{tid}/purchase-orders/{id}",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "purchaseOrderId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST purchase order ID (not the PO number)"
+          }
+        },
+        "required": [
+          "purchaseOrderId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "purchase_orders_list",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/inventory/v2/tenant/{tid}/purchase-orders",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "jobId": {
+            "description": "Filter by ST job ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "technicianId": {
+            "description": "Filter by requesting technician ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "projectId": {
+            "description": "Filter by project ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "status": {
+            "description": "ST PO status, e.g. Pending, Sent, PartiallyReceived, Received, Canceled",
+            "type": "string"
+          },
+          "number": {
+            "description": "Exact PO number",
+            "type": "string"
+          },
+          "createdOnOrAfter": {
+            "description": "ISO 8601; POs created at or after this instant",
+            "type": "string"
+          },
+          "modifiedOnOrAfter": {
+            "description": "ISO 8601; POs modified at or after this instant",
+            "type": "string"
+          },
+          "page": {
+            "description": "Page number, default 1",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "description": "Page size, default 25, max 100",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 100
+          },
+          "includeTotal": {
+            "description": "Ask ST for totalCount; returned as total_count (null when omitted)",
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "search_materials",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/pricebook/v2/tenant/{tid}/materials",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "code": {
+            "description": "Exact material code (e.g. \"WHEH-140\").",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "name": {
+            "description": "NOT SUPPORTED by ServiceTitan on this endpoint; returns a validation error. Use search_pricebook_all({query}).",
+            "type": "string"
+          },
+          "categoryId": {
+            "description": "NOT SUPPORTED by ServiceTitan on this endpoint; returns a validation error.",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "active": {
+            "description": "Filter the page listing by active status (default: all)",
+            "type": "boolean"
+          },
+          "page": {
+            "default": 1,
+            "description": "Page number",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "default": 50,
+            "description": "Page size, max 200",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 200
+          }
+        },
+        "required": [
+          "page",
+          "pageSize"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "search_pricebook_all",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/pricebook/v2/tenant/{tid}/services",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "code": {
+            "description": "Exact pricebook code (e.g. \"HUM-120\"). Wins over query if both are given.",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "query": {
+            "description": "Words to match against code, name, and description (all must match).",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "search_pricebook_services",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/pricebook/v2/tenant/{tid}/services",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "code": {
+            "description": "Exact service code (e.g. \"WHEH-140\").",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "name": {
+            "description": "NOT SUPPORTED by ServiceTitan on this endpoint; returns a validation error. Use search_pricebook_all({query}).",
+            "type": "string"
+          },
+          "categoryId": {
+            "description": "NOT SUPPORTED by ServiceTitan on this endpoint; returns a validation error.",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "active": {
+            "description": "Filter the page listing by active status (default: all)",
+            "type": "boolean"
+          },
+          "page": {
+            "default": 1,
+            "description": "Page number",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "default": 50,
+            "description": "Page size, max 200",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 200
+          }
+        },
+        "required": [
+          "page",
+          "pageSize"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "search_pricebook_templates",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/sales/v2/tenant/{tid}/estimate-templates",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300,
+            "description": "Template or proposal name words"
+          },
+          "limit": {
+            "description": "Max results (default 12, max 25)",
+            "default": 12,
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 25
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "sell_estimate",
+      "write": true,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "PUT",
+        "path": "/sales/v2/tenant/{tid}/estimates/{estimateId}/sell",
+        "source": "live"
+      },
+      "roles": [
+        "default",
+        "admin"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "estimateId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST estimate ID"
+          },
+          "soldBy": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "Technician ID who sold the estimate"
+          },
+          "dryRun": {
+            "default": true,
+            "description": "true (default) = preview + token; false = execute write",
+            "type": "boolean"
+          },
+          "confirmation_token": {
+            "description": "Token from prior dryRun=true call",
+            "type": "string"
+          }
+        },
+        "required": [
+          "estimateId",
+          "soldBy",
+          "dryRun"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "service_agreement_get",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/service-agreements/v2/tenant/{tid}/service-agreements/{id}",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "agreementId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST service agreement ID"
+          }
+        },
+        "required": [
+          "agreementId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "service_agreements_list",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/service-agreements/v2/tenant/{tid}/service-agreements",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "description": "Filter by ST customer ID (sent as customerIds)",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "businessUnitId": {
+            "description": "Filter by business unit ID (sent as businessUnitIds)",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "status": {
+            "description": "ST agreement status, e.g. Draft, Active, Expired, Cancelled",
+            "type": "string"
+          },
+          "modifiedOnOrAfter": {
+            "description": "ISO 8601; agreements modified at or after this instant",
+            "type": "string"
+          },
+          "createdOnOrAfter": {
+            "description": "ISO 8601; agreements created at or after this instant",
+            "type": "string"
+          },
+          "page": {
+            "description": "Page number, default 1",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "description": "Page size, default 25, max 100",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 100
+          },
+          "includeTotal": {
+            "description": "Ask ST for totalCount; returned as total_count (null when omitted)",
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "st_add_invoice_line_item",
+      "write": true,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "PATCH",
+        "path": "/accounting/v2/tenant/{tid}/invoices/{invoiceId}/items",
+        "source": "live"
+      },
+      "roles": [
+        "default",
+        "admin"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "invoiceId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST invoice ID to modify"
+          },
+          "lineItems": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "description": "Existing ST invoice-item ID to UPDATE. Omit to APPEND a new line item (append requires skuId/skuName AND unitPrice).",
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "skuId": {
+                  "description": "Pricebook SKU ID for this line item (accepted here; NOT accepted by the adjustment endpoint)",
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "skuName": {
+                  "description": "SKU display name/code (empty string is rejected, ST would 500 mid-sequence on it)",
+                  "type": "string",
+                  "minLength": 1
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Line item description (required by the ST update model)"
+                },
+                "quantity": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "description": "Line item quantity (required by the ST update model)"
+                },
+                "cost": {
+                  "description": "Line item cost basis (not the sell price, see unitPrice)",
+                  "type": "number"
+                },
+                "technicianId": {
+                  "description": "Technician ID to attribute this line item to",
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "unitPrice": {
+                  "description": "Sell price per unit, THE monetary field on this endpoint. ServiceTitan silently IGNORES a field named `price` (it returns HTTP 200 and writes a $0.00 line), so unitPrice is the only way to set the amount. NEGATIVE values are allowed and are how an offsetting/credit line is expressed. REQUIRED when appending (no `id`): ST does NOT compute dynamic pricing on API-appended items, so an append without unitPrice lands at $0.00 and the tool rejects it. On an UPDATE (`id` present) you may omit it to leave the existing price alone, but that is UNPROBED: ST may bind the omitted field as null and zero the line. The tool warns at dryRun and the post-write verify-read reports amount_mismatch if the price moved.",
+                  "type": "number"
+                },
+                "price": {
+                  "description": "DO NOT SEND. ST silently drops `price` and writes a $0.00 line. Use `unitPrice`. Any value is rejected."
+                }
+              },
+              "required": [
+                "description",
+                "quantity"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Line items to add/update on the invoice. One PATCH call is issued per item"
+          },
+          "dryRun": {
+            "default": true,
+            "description": "true (default) = preview + token; false = execute write",
+            "type": "boolean"
+          },
+          "confirmation_token": {
+            "description": "Token from prior dryRun=true call, required when dryRun=false",
+            "type": "string"
+          }
+        },
+        "required": [
+          "invoiceId",
+          "lineItems",
+          "dryRun"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "st_create_adjustment_invoice",
+      "write": true,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "POST",
+        "path": "/accounting/v2/tenant/{tid}/invoices",
+        "source": "live"
+      },
+      "roles": [
+        "default",
+        "admin"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "parentInvoiceId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ServiceTitan invoice ID being adjusted"
+          },
+          "lineItems": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "skuName": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Pricebook CODE of the item (e.g. \"SKU1\"), not its display name. REQUIRED: ServiceTitan resolves an adjustment line by SKU name. Unlike the invoice-items PATCH endpoint, `skuId` is silently IGNORED here. The code is checked against the live pricebook before the write (an exact code wins; case and hyphen variants such as \"ab12\" for \"AB-12\" are accepted when they match one row) and the matched row's exact code is what gets sent. A name that matches nothing, or more than one row, is rejected: an unresolvable name would be dropped by ServiceTitan and produce an empty $0.00 adjustment invoice that cannot be deleted via the API."
+                },
+                "description": {
+                  "description": "Line description",
+                  "type": "string"
+                },
+                "quantity": {
+                  "type": "number",
+                  "exclusiveMinimum": 0,
+                  "description": "Line quantity"
+                },
+                "cost": {
+                  "description": "Line cost basis (not the sell amount, see unitPrice)",
+                  "type": "number"
+                },
+                "unitPrice": {
+                  "description": "Sell price per unit, THE monetary field on this endpoint. ServiceTitan silently IGNORES a field named `price` (HTTP 200, $0.00 line). NEGATIVE values are allowed and are how an offsetting adjustment line is expressed, e.g. unitPrice: -100 to back out revenue booked on the parent invoice. Omitting it creates the line at $0.00 (ServiceTitan does not apply dynamic pricing to API-created invoice lines), which is almost never what an adjustment wants, so the tool warns when it is omitted.",
+                  "type": "number"
+                },
+                "price": {
+                  "description": "DO NOT SEND. ServiceTitan silently drops `price` and the line lands at $0.00. Use `unitPrice`. Any value is rejected."
+                },
+                "skuId": {
+                  "description": "DO NOT SEND. ServiceTitan resolves adjustment lines by SKU NAME only and silently drops skuId. Use `skuName`. Any value is rejected."
+                }
+              },
+              "required": [
+                "skuName",
+                "quantity"
+              ],
+              "additionalProperties": false
+            },
+            "description": "Adjustment line items, sent to ServiceTitan as `items`; typically negative unitPrice to offset revenue"
+          },
+          "summary": {
+            "description": "Invoice summary/memo, accepted at the top level by ServiceTitan (e.g. why the adjustment exists)",
+            "type": "string"
+          },
+          "offsetAmount": {
+            "description": "If provided, warns (does not block) when the lineItems total does not net this amount to zero",
+            "type": "number"
+          },
+          "dryRun": {
+            "default": true,
+            "description": "true (default) = preview + token; false = execute write",
+            "type": "boolean"
+          },
+          "confirmation_token": {
+            "description": "Token from prior dryRun=true call, required when dryRun=false",
+            "type": "string"
+          },
+          "businessUnitId": {
+            "description": "DO NOT SEND. ServiceTitan silently ignores it and the adjustment inherits the parent invoice's business unit. Any value is rejected."
+          },
+          "invoiceDate": {
+            "description": "DO NOT SEND. ServiceTitan silently ignores it and dates the adjustment itself. Any value is rejected."
+          }
+        },
+        "required": [
+          "parentInvoiceId",
+          "lineItems",
+          "dryRun"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "st_create_material",
+      "write": true,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "POST",
+        "path": "/pricebook/v2/tenant/{tid}/materials",
+        "source": "live"
+      },
+      "roles": [
+        "default",
+        "admin"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Display name for the material"
+          },
+          "categoryId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "Pricebook category ID (required by ST)"
+          },
+          "code": {
+            "description": "Material code",
+            "type": "string"
+          },
+          "description": {
+            "description": "Material description",
+            "type": "string"
+          },
+          "cost": {
+            "description": "Internal cost per unit",
+            "type": "number"
+          },
+          "price": {
+            "description": "Price per unit charged to the customer",
+            "type": "number"
+          },
+          "active": {
+            "description": "Whether active in pricebook (default true)",
+            "type": "boolean"
+          },
+          "unitOfMeasure": {
+            "description": "Unit of measure (e.g. \"Each\", \"Box\")",
+            "type": "string"
+          },
+          "primaryVendor": {
+            "description": "Primary vendor — REQUIRED by ST (exactly one). Supply this or primaryVendorId.",
+            "type": "object",
+            "properties": {
+              "vendorId": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 9007199254740991,
+                "description": "ST vendor ID (see inventory_vendors_list)"
+              },
+              "cost": {
+                "description": "Vendor cost per unit; defaults to the material cost when omitted",
+                "type": "number"
+              },
+              "active": {
+                "default": true,
+                "description": "Whether this vendor link is active",
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "vendorId",
+              "active"
+            ],
+            "additionalProperties": false
+          },
+          "primaryVendorId": {
+            "description": "Shorthand: primary vendor ID (alternative to the primaryVendor object)",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "primaryVendorCost": {
+            "description": "Shorthand: primary vendor cost (used with primaryVendorId; defaults to material cost)",
+            "type": "number"
+          },
+          "dryRun": {
+            "default": true,
+            "description": "true (default) = preview + token; false = execute write",
+            "type": "boolean"
+          },
+          "confirmation_token": {
+            "description": "Token from prior dryRun=true call",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "categoryId",
+          "dryRun"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "st_create_service",
+      "write": true,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "POST",
+        "path": "/pricebook/v2/tenant/{tid}/services",
+        "source": "live"
+      },
+      "roles": [
+        "default",
+        "admin"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Display name for the service"
+          },
+          "categoryId": {
+            "description": "Pricebook category ID (single-cat shortcut; pass categories[] for multi-cat)",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "categories": {
+            "description": "Multi-category. If passed, takes precedence over categoryId.",
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "code": {
+            "description": "Service code (e.g. \"HVAC-DIAG-01\")",
+            "type": "string"
+          },
+          "description": {
+            "description": "Service description shown on invoices",
+            "type": "string"
+          },
+          "cost": {
+            "description": "Internal cost",
+            "type": "number"
+          },
+          "price": {
+            "description": "Static price. Only meaningful when useStaticPrices=true.",
+            "type": "number"
+          },
+          "memberPrice": {
+            "description": "Member-tier static price. Only meaningful when useStaticPrices=true. Omit (or set equal to price) for no member discount.",
+            "type": "number"
+          },
+          "useStaticPrices": {
+            "description": "Plural — the field ST actually accepts. true at create time = static pricing. Cannot be flipped via PATCH post-create (UI-only).",
+            "type": "boolean"
+          },
+          "hours": {
+            "description": "Labor hours (used for cost calc on isLabor=true services)",
+            "type": "number"
+          },
+          "isLabor": {
+            "description": "true = labor line item; false = part/equipment/fee",
+            "type": "boolean"
+          },
+          "taxable": {
+            "description": "Whether the service is taxable",
+            "type": "boolean"
+          },
+          "account": {
+            "description": "GL account name (e.g. \"Revenue\")",
+            "type": "string"
+          },
+          "paysCommission": {
+            "description": "Whether commission applies on sale",
+            "type": "boolean"
+          },
+          "active": {
+            "description": "Whether active in pricebook (default true)",
+            "type": "boolean"
+          },
+          "dryRun": {
+            "default": true,
+            "description": "true (default) = preview + token; false = execute write",
+            "type": "boolean"
+          },
+          "confirmation_token": {
+            "description": "Token from prior dryRun=true call",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "dryRun"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "st_get_capacity_slots",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "POST",
+        "path": "/dispatch/v2/tenant/{tid}/capacity",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "startsOnOrAfter": {
+            "type": "string",
+            "description": "ISO 8601 datetime — earliest slot start (inclusive)"
+          },
+          "endsOnOrBefore": {
+            "type": "string",
+            "description": "ISO 8601 datetime — latest slot end (inclusive)"
+          },
+          "businessUnitIds": {
+            "description": "Business unit IDs to constrain slot search",
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "skillBasedAvailability": {
+            "description": "Use skill-based availability matching (default: false)",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "startsOnOrAfter",
+          "endsOnOrBefore"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "st_get_customer",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/crm/v2/tenant/{tid}/customers/{customerId}",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ServiceTitan customer ID"
+          }
+        },
+        "required": [
+          "customerId"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "st_get_pricebook",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/pricebook/v2/tenant/{tid}/{assetType}",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "assetType": {
+            "type": "string",
+            "enum": [
+              "services",
+              "materials",
+              "equipment"
+            ],
+            "description": "Pricebook asset category"
+          },
+          "page": {
+            "description": "Page number, default 1",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "description": "Page size, default 50, max 200",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 200
+          },
+          "active": {
+            "description": "Filter to only active items",
+            "type": "boolean"
+          },
+          "search": {
+            "description": "NOT SUPPORTED by ServiceTitan on this endpoint — passing it returns a validation error. Use search_pricebook_all({query}) for text search.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "assetType"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "st_list_appointments",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/jpm/v2/tenant/{tid}/appointments",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "page": {
+            "description": "Page number, default 1",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "description": "Page size, default 50, max 200",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 200
+          },
+          "startsOnOrAfter": {
+            "description": "ISO 8601 — filter start >= this",
+            "type": "string"
+          },
+          "startsBefore": {
+            "description": "ISO 8601 — filter start < this",
+            "type": "string"
+          },
+          "technicianId": {
+            "description": "Filter by assigned technician",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "jobId": {
+            "description": "Filter by job ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "active": {
+            "description": "Filter by active flag. true → active only; false → inactive only; omit → all.",
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "st_list_customers",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/crm/v2/tenant/{tid}/customers",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "page": {
+            "description": "Page number, default 1",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "description": "Page size, default 50, max 200",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 200
+          },
+          "modifiedOnOrAfter": {
+            "description": "ISO 8601 timestamp, returns customers modified on or after this time",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "st_list_jobs",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/jpm/v2/tenant/{tid}/jobs",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "page": {
+            "description": "Page number, default 1",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "description": "Page size, default 50, max 200",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 200
+          },
+          "customerId": {
+            "description": "Filter by ST customer ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "jobStatus": {
+            "description": "ST job status filter (Scheduled, InProgress, Hold, Completed, Canceled, etc.)",
+            "type": "string"
+          },
+          "modifiedOnOrAfter": {
+            "description": "ISO 8601 timestamp filter",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "st_operation_status",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "local:operations",
+        "source": "computed"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "operation_id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "operation_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "st_patch_material",
+      "write": true,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "PATCH",
+        "path": "/pricebook/v2/tenant/{tid}/materials/{id}",
+        "source": "live"
+      },
+      "roles": [
+        "default",
+        "admin"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST pricebook material ID"
+          },
+          "name": {
+            "description": "Display name",
+            "type": "string"
+          },
+          "code": {
+            "description": "Material code",
+            "type": "string"
+          },
+          "description": {
+            "description": "Material description",
+            "type": "string"
+          },
+          "cost": {
+            "description": "Internal cost per unit",
+            "type": "number"
+          },
+          "price": {
+            "description": "Price per unit charged to the customer",
+            "type": "number"
+          },
+          "active": {
+            "description": "Whether active in pricebook",
+            "type": "boolean"
+          },
+          "categoryId": {
+            "description": "Pricebook category ID",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "unitOfMeasure": {
+            "description": "Unit of measure (e.g. \"Each\", \"Box\")",
+            "type": "string"
+          },
+          "dryRun": {
+            "default": true,
+            "description": "true (default) = preview + token; false = execute write",
+            "type": "boolean"
+          },
+          "confirmation_token": {
+            "description": "Token from prior dryRun=true call",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "dryRun"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "st_patch_service",
+      "write": true,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "PATCH",
+        "path": "/pricebook/v2/tenant/{tid}/services/{id}",
+        "source": "live"
+      },
+      "roles": [
+        "default",
+        "admin"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST pricebook service ID"
+          },
+          "name": {
+            "description": "Display name (rewritten to displayName before submit)",
+            "type": "string"
+          },
+          "code": {
+            "description": "Service code (e.g. \"HVAC-DIAG-01\")",
+            "type": "string"
+          },
+          "description": {
+            "description": "Service description shown on invoices",
+            "type": "string"
+          },
+          "cost": {
+            "description": "Internal cost (required for correct job costing)",
+            "type": "number"
+          },
+          "price": {
+            "description": "Static price. Only meaningful when useStaticPrices=true.",
+            "type": "number"
+          },
+          "memberPrice": {
+            "description": "Member-tier static price. Only meaningful when useStaticPrices=true.",
+            "type": "number"
+          },
+          "useStaticPrices": {
+            "description": "Plural — the field ST actually accepts. CAN ONLY BE FLIPPED via UI post-create — PATCH attempts silently drop.",
+            "type": "boolean"
+          },
+          "hours": {
+            "description": "Labor hours (used for cost calc on isLabor=true services)",
+            "type": "number"
+          },
+          "isLabor": {
+            "description": "true = labor line item; false = part/equipment/fee",
+            "type": "boolean"
+          },
+          "taxable": {
+            "description": "Whether the service is taxable",
+            "type": "boolean"
+          },
+          "account": {
+            "description": "GL account name (e.g. \"Revenue\")",
+            "type": "string"
+          },
+          "paysCommission": {
+            "description": "Whether commission applies on sale",
+            "type": "boolean"
+          },
+          "active": {
+            "description": "Whether the service is active in the pricebook",
+            "type": "boolean"
+          },
+          "categoryId": {
+            "description": "Pricebook category ID (single-cat shortcut; pass categories[] for multi-cat)",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "categories": {
+            "description": "Multi-category. If passed, takes precedence over categoryId.",
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "dryRun": {
+            "default": true,
+            "description": "true (default) = preview + token; false = execute write",
+            "type": "boolean"
+          },
+          "confirmation_token": {
+            "description": "Token from prior dryRun=true call",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "dryRun"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "st_report_results",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "local:report-runs",
+        "source": "computed"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "report_run_id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "report_run_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "st_report_start",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "POST",
+        "path": "/reporting/v2/tenant/{tid}/report-category/{cat}/reports/{reportId}/data/query",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "categoryId": {
+            "type": [
+              "string",
+              "number"
+            ]
+          },
+          "reportId": {
+            "type": [
+              "string",
+              "number"
+            ]
+          },
+          "parameters": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "value": {}
+              },
+              "required": [
+                "name",
+                "value"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "page": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 5000
+          }
+        },
+        "required": [
+          "categoryId",
+          "reportId",
+          "parameters"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "st_report_status",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "GET",
+        "path": "/reporting/v2/tenant/{tid}/data-queries/{token}",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "report_run_id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "report_run_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "st_run_report",
+      "write": false,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "POST",
+        "path": "/reporting/v2/tenant/{tid}/report-category/{cat}/reports/{reportId}/data/query",
+        "source": "live"
+      },
+      "roles": [
+        "readonly",
+        "default",
+        "admin",
+        "lockdown"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "list_categories",
+              "list_reports",
+              "describe_report",
+              "run"
+            ],
+            "description": "Reporting workflow step"
+          },
+          "categoryId": {
+            "description": "Report category ID — required for list_reports/describe_report/run",
+            "type": [
+              "string",
+              "number"
+            ]
+          },
+          "reportId": {
+            "description": "Report ID — required for describe_report/run",
+            "type": [
+              "string",
+              "number"
+            ]
+          },
+          "parameters": {
+            "description": "Parameter list for mode=run; shape per describe_report response",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "value": {}
+              },
+              "required": [
+                "name",
+                "value"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "page": {
+            "description": "Page (run mode only, default 1)",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "pageSize": {
+            "description": "Page size (run mode only, default 100)",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 5000
+          },
+          "pollTimeoutSeconds": {
+            "description": "mode=run only. Wall-clock ceiling for the legacy polling path. Default 180, max 240. Use the resumable report tools for longer work.",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 240
+          }
+        },
+        "required": [
+          "mode"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "unsell_estimate",
+      "write": true,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "PUT",
+        "path": "/sales/v2/tenant/{tid}/estimates/{estimateId}/unsell",
+        "source": "live"
+      },
+      "roles": [
+        "default",
+        "admin"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "estimateId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST estimate ID"
+          },
+          "dryRun": {
+            "default": true,
+            "description": "true (default) = preview + token; false = execute write",
+            "type": "boolean"
+          },
+          "confirmation_token": {
+            "description": "Token from prior dryRun=true call",
+            "type": "string"
+          }
+        },
+        "required": [
+          "estimateId",
+          "dryRun"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "update_business_unit_metadata",
+      "write": true,
+      "permission": "admin",
+      "admin_only": true,
+      "endpoint": {
+        "method": "PATCH",
+        "path": "/settings/v2/tenant/{tid}/business-units/{id}",
+        "source": "live"
+      },
+      "roles": [
+        "admin"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "changes": {
+            "type": "object",
+            "properties": {
+              "externalData": {
+                "type": "object",
+                "properties": {
+                  "patchMode": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "Replace",
+                          "Merge"
+                        ]
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "applicationGuid": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "externalData": {
+                    "maxItems": 500,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "key": {
+                          "type": "string"
+                        },
+                        "value": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "key"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": [
+                  "applicationGuid",
+                  "externalData"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          },
+          "dryRun": {
+            "default": true,
+            "type": "boolean"
+          },
+          "confirmation_token": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "changes",
+          "dryRun"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "update_estimate_template",
+      "write": true,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "PATCH",
+        "path": "/sales/v2/tenant/{tid}/estimate-templates/{templateId}",
+        "source": "live"
+      },
+      "roles": [
+        "default",
+        "admin"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "templateId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "ST estimate template ID"
+          },
+          "name": {
+            "description": "Template display name",
+            "type": "string",
+            "minLength": 1
+          },
+          "internalName": {
+            "description": "Internal-only name (not shown to customers)",
+            "type": "string"
+          },
+          "summary": {
+            "description": "Short summary/description of the template",
+            "type": "string"
+          },
+          "mode": {
+            "description": "Pricing mode",
+            "type": "string",
+            "enum": [
+              "Dynamic",
+              "Static"
+            ]
+          },
+          "businessUnitId": {
+            "description": "Business unit this template belongs to",
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "active": {
+            "description": "active:false has the same effect as delete_estimate_template (soft-deactivate); active:true reactivates a deactivated template.",
+            "type": "boolean"
+          },
+          "items": {
+            "description": "Full-replacement item array in the exact GET item shape (sent verbatim — removal by omission). Omit entirely to leave existing items untouched.",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "skuId": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "skuType": {
+                  "type": "string"
+                },
+                "skuName": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "quantity": {
+                  "type": "number"
+                },
+                "unitPrice": {
+                  "type": "number"
+                },
+                "totalPrice": {
+                  "type": "number"
+                },
+                "isAddOn": {
+                  "type": "boolean"
+                },
+                "chargeable": {
+                  "type": "boolean"
+                },
+                "allowDiscounts": {
+                  "type": "boolean"
+                },
+                "unitCost": {
+                  "type": "number"
+                },
+                "memo": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "order": {
+                  "type": "number"
+                },
+                "parentItemId": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "itemGroupParentId": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                },
+                "itemGroupName": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "projectLabels": {
+                  "type": "array",
+                  "items": {}
+                }
+              },
+              "additionalProperties": {}
+            }
+          },
+          "dryRun": {
+            "default": true,
+            "description": "true (default) = preview + token; false = execute write",
+            "type": "boolean"
+          },
+          "confirmation_token": {
+            "description": "Token from prior dryRun=true call",
+            "type": "string"
+          }
+        },
+        "required": [
+          "templateId",
+          "dryRun"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "update_job_type",
+      "write": true,
+      "permission": "admin",
+      "admin_only": true,
+      "endpoint": {
+        "method": "PATCH",
+        "path": "/jpm/v2/tenant/{tid}/job-types/{id}",
+        "source": "live"
+      },
+      "roles": [
+        "admin"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "changes": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "businessUnitIds": {
+                "maxItems": 500,
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              },
+              "skills": {
+                "maxItems": 500,
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "tagTypeIds": {
+                "maxItems": 500,
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              },
+              "priority": {
+                "type": "string"
+              },
+              "duration": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "soldThreshold": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "class": {
+                "type": "string"
+              },
+              "summary": {
+                "type": "string"
+              },
+              "noCharge": {
+                "type": "boolean"
+              },
+              "enforceRecurringServiceEventSelection": {
+                "type": "boolean"
+              },
+              "invoiceSignaturesRequired": {
+                "type": "boolean"
+              },
+              "defaultEstimateSoldAction": {
+                "type": "string"
+              },
+              "customFieldTypeIds": {
+                "maxItems": 500,
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "dryRun": {
+            "default": true,
+            "type": "boolean"
+          },
+          "confirmation_token": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "changes",
+          "dryRun"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "update_proposal_template",
+      "write": true,
+      "permission": "staff",
+      "admin_only": false,
+      "endpoint": {
+        "method": "PATCH",
+        "path": "/sales/v2/tenant/{tid}/proposal-templates/{templateId}",
+        "source": "live"
+      },
+      "roles": [
+        "default",
+        "admin"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "templateId": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991,
+            "description": "Proposal template id"
+          },
+          "name": {
+            "description": "New name (must stay unique)",
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 255
+          },
+          "description": {
+            "description": "Customer-facing description",
+            "type": "string"
+          },
+          "businessUnitIds": {
+            "description": "Replaces the business-unit list",
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "estimateAssignments": {
+            "description": "Replaces the whole tier list",
+            "minItems": 1,
+            "maxItems": 10,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "order": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "estimateTemplateId": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "proposalTypeOptionId": {
+                  "type": "integer",
+                  "exclusiveMinimum": 0,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": [
+                "order",
+                "estimateTemplateId",
+                "proposalTypeOptionId"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "active": {
+            "description": "Active flag",
+            "type": "boolean"
+          },
+          "categoryIds": {
+            "description": "NOT SUPPORTED by the public API; returns a validation error.",
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "exclusiveMinimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "dryRun": {
+            "default": true,
+            "description": "true (default) = preview + token; false = execute write",
+            "type": "boolean"
+          },
+          "confirmation_token": {
+            "description": "Token from prior dryRun=true call",
+            "type": "string"
+          }
+        },
+        "required": [
+          "templateId",
+          "dryRun"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "update_tag_type",
+      "write": true,
+      "permission": "admin",
+      "admin_only": true,
+      "endpoint": {
+        "method": "PATCH",
+        "path": "/settings/v2/tenant/{tid}/tag-types/{id}",
+        "source": "live"
+      },
+      "roles": [
+        "admin"
+      ],
+      "input": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 9007199254740991
+          },
+          "changes": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "color": {
+                "type": "string",
+                "pattern": "^#([0-9A-Fa-f]{6})$"
+              },
+              "code": {
+                "type": "string",
+                "maxLength": 20
+              },
+              "importance": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "Medium",
+                      "High"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "isConversionOpportunity": {
+                "type": "boolean"
+              },
+              "allowToUseOnTimesheetActivity": {
+                "type": "boolean"
+              },
+              "isVisibleOnDispatchBoard": {
+                "type": "boolean"
+              },
+              "active": {
+                "type": "boolean"
+              }
+            },
+            "additionalProperties": false
+          },
+          "dryRun": {
+            "default": true,
+            "type": "boolean"
+          },
+          "confirmation_token": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "changes",
+          "dryRun"
+        ],
+        "additionalProperties": false
+      }
+    }
+  ]
+}

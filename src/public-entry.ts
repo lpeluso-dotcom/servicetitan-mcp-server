@@ -1,3 +1,4 @@
+import { profileFor, resolveVisibleTools } from './profiles';
 import { createMcpHandler } from 'agents/mcp';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { Env } from './env';
@@ -129,7 +130,7 @@ export function buildPublicServer(env: Env, execCtx: ExecutionContext, reqCtx: R
     { name: PUBLIC_SERVICE_NAME, version: env.MCP_SERVICE_VERSION },
     { instructions: PUBLIC_INSTRUCTIONS },
   );
-  const visible = filterToolsForRole(PUBLIC_TOOLS, reqCtx.role);
+  const visible = resolveVisibleTools(reqCtx.role, reqCtx.allowedTools, profileFor(env, reqCtx.principal));
   const scoped: RequestContext = { ...reqCtx, availableTools: visible.map((t) => t.name) };
   for (const tool of visible) registerTool(server, tool, env, execCtx, scoped);
   if (!compactToolListOnWire(server)) {
@@ -199,7 +200,8 @@ async function tokenFetch(request: Request, env: Env, ctx: ExecutionContext): Pr
     : await resolvePublicAuth(request, env);
   if (!auth.authenticated) return unauthorized(request);
   const reqCtx: RequestContext = { actor: auth.actor, role: auth.role, principal: auth.principal, signal: request.signal };
-  const server = buildPublicServer(env, ctx, reqCtx);
+  let server:McpServer;
+  try { server = buildPublicServer(env, ctx, reqCtx); } catch { return Response.json({error:'Tool profile configuration is invalid'}, {status:503}); }
   return createMcpHandler(server, { route: '/mcp', corsOptions: corsOptionsFor(request) })(request, env, ctx);
 }
 
@@ -215,7 +217,8 @@ const oauthApiHandler = {
       role: env.MCP_LOCKDOWN === 'true' ? 'lockdown' : 'readonly',
       signal: request.signal,
     };
-    const server = buildPublicServer(env, ctx, reqCtx);
+    let server:McpServer;
+  try { server = buildPublicServer(env, ctx, reqCtx); } catch { return Response.json({error:'Tool profile configuration is invalid'}, {status:503}); }
     return createMcpHandler(server, { route: '/mcp-oauth', corsOptions: corsOptionsFor(request) })(request, env, ctx);
   },
 };

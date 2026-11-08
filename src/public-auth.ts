@@ -8,6 +8,11 @@ export async function resolvePublicAuth(request: Request, env: Env): Promise<Aut
   
   const header = request.headers.get('authorization') ?? '';
   const token = BEARER_RE.exec(header)?.[1] ?? '';
+  if (token && hasConfiguredSecret(env.MCP_CONFIG_ADMIN_TOKEN) && await timingSafeEqual(token, env.MCP_CONFIG_ADMIN_TOKEN)) {
+    // A dedicated credential, distinct from the operational token. Never infer admin from a client header.
+    if (env.MCP_CONFIG_ADMIN_TOKEN === env.MCP_TOKEN) return { authenticated: false, role: 'readonly', actor: 'anonymous', authMode: 'none' };
+    return { authenticated: true, role: env.MCP_LOCKDOWN === 'true' ? 'lockdown' : 'admin', actor: 'configuration-admin', principal: 'configuration-admin', authMode: 'mcp-token' };
+  }
   if (!token || !hasConfiguredSecret(env.MCP_TOKEN) || !(await timingSafeEqual(token, env.MCP_TOKEN))) {
     return { authenticated: false, role: 'default', actor: 'anonymous', authMode: 'none' };
   }
