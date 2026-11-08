@@ -161,7 +161,7 @@ export function registerTool(
         const task = withBudget(env, scopeFor(env, reqCtx), tool.name === 'st_run_report' ? Math.min(600, Number(args.pollTimeoutSeconds) || 180) * 1000 : 180_000, async (scoped, budget) => {
           const invoke = () => tool.handler(scoped, args, { actor: reqCtx.actor, correlation, principal: reqCtx.principal, role: reqCtx.role, availableTools: reqCtx.availableTools });
           try {
-            const rawResult = tool.name === 'st_operation_status' ? await operationStatus(scoped, String(args.operation_id), scopeFor(env, reqCtx), reqCtx.role, reqCtx.allowedTools)
+            const rawResult = tool.name === 'st_operation_status' ? await operationStatus(scoped, String(args.operation_id), scopeFor(env, reqCtx), reqCtx.role, reqCtx.allowedTools, reqCtx.availableTools)
               : tool.name === 'get_result_page' ? await getResultPage(scoped, String(args.result_id), Number(args.cursor ?? 0), reqCtx)
               : tool.isWrite && args.dryRun === false
               ? await recoverableWrite(scoped, tool.name, args, scopeFor(env, reqCtx), reqCtx.role, invoke)

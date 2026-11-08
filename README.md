@@ -71,34 +71,51 @@ Instead of one shared token, users can sign in through Cloudflare Access with an
 |---|---|---|
 | `add_customer_note` | write | Append a note to a customer record. |
 | `add_job_note` | write | Append a note to a job. |
+| `ap_bill_get` | read | Live ServiceTitan ap bill get. |
+| `ap_bills_list` | read | Live ServiceTitan ap bills list. |
+| `booking_get` | read | Live ServiceTitan booking get. |
+| `bookings_list` | read | Live ServiceTitan bookings list. |
+| `call_recording_get` | read | Recording availability, content type and size; audio is not returned. |
+| `call_voicemail_get` | read | Voicemail availability, content type and size; audio is not returned. |
+| `calls_list` | read | Live ServiceTitan calls list. |
+| `configuration_snapshot` | read | Capture bounded configuration sections with completeness metadata. |
+| `compare_configuration_snapshots` | read | Compare two complete snapshots without applying changes. |
 | `create_estimate_template` | write | Create a new estimate template. |
+| `create_job_type` | write | Create job type; configuration writes require admin. |
 | `create_proposal_template` | write | Create a proposal template (a tiered set of estimate templates, for example Good/Better/Best). |
-| `create_recurring_service` | write | Create a recurring service under an active membership. |
+| `create_tag_type` | write | Create tag type; configuration writes require admin. |
 | `create_task` | write | Create a task linked to a job. |
 | `customer_snapshot` | read | Customer details, locations, jobs, memberships, estimates, and invoices in one call. Reports partial results if one read fails. |
 | `delete_estimate_template` | write | Soft-deactivates an estimate template (sets active=false) — reversible via update_estimate_template({templateId, active:true}). |
 | `delete_proposal_template` | write | Delete a proposal template. |
 | `dismiss_estimate` | write | Dismiss an estimate (status becomes Dismissed). |
+| `equipment_installed_get` | read | Live ServiceTitan equipment installed get. |
+| `equipment_installed_list` | read | Live ServiceTitan equipment installed list. |
+| `equipment_systems_list` | read | Live ServiceTitan equipment systems list. |
+| `estimate_reference_evidence` | read | Compare listing/detail reference IDs for up to 20 exact estimates. |
 | `find_customer` | read | Search ST customers by name or phone. |
 | `find_technician_by_name` | read | Resolve a technician name (full or partial) to their technicianId and roster profile. |
+| `get_business_unit` | read | Get business unit; configuration writes require admin. |
 | `get_call` | read | Get details for a telecom call record including duration, campaign attribution, and recording info. |
 | `get_campaign_performance` | read | Get performance metrics for a campaign (leads, bookings, revenue) via ST Reporting API. |
 | `get_capacity` | read | Get dispatch capacity for business units over a date range (POST to ST /dispatch/v2/.../capacity; the body carries the filters). |
 | `get_configurable_equipment_children` | read | Get the child equipment variations of a configurable (parent) equipment item. |
-| `get_customer` | read | Get a single ST customer by ID. |
 | `get_customer_locations` | read | Get service locations for a customer. |
 | `get_customer_membership` | read | Get memberships for a customer. |
-| `get_estimate` | read | Get full details for a single estimate including line items and status. |
+| `get_customer` | read | Get a single ST customer by ID. |
 | `get_estimate_template` | read | Get full details for a single estimate template, including its line items. |
+| `get_estimate` | read | Get full details for a single estimate including line items and status. |
 | `get_form_submission` | read | Get a form submission by `formId` and `submissionId`. |
-| `get_invoice` | read | Get full invoice details including line items and totals. |
 | `get_invoice_balance` | read | Get the outstanding balance for an invoice. |
-| `get_job` | read | Get a single ST job by ID. |
+| `get_invoice` | read | Get full invoice details including line items and totals. |
 | `get_job_appointments` | read | Get appointments for a job. |
 | `get_job_history` | read | Get the audit-log / event timeline for a single ST job: booking events, capacity-tool usage, status changes, reassignments, etc. |
+| `get_job_type` | read | Get job type; configuration writes require admin. |
+| `get_job` | read | Get a single ST job by ID. |
 | `get_proposal_tiers` | read | Return the tier ladder (for example Good/Better/Best) of a proposal template: each tier's order, proposalTypeOptionId, estimate template id and name, item count, and active flag, in assignment order. |
 | `get_result_page` | read | Retrieve one authenticated, computed page from a previously offloaded result. |
 | `get_service_details` | read | Get full details for a single pricebook service, including pricing tiers and categories. |
+| `get_tag_type` | read | Get tag type; configuration writes require admin. |
 | `get_technician_shifts` | read | Get scheduled shifts for a technician. |
 | `inventory_receipts_list` | read | List ServiceTitan inventory receipts (incoming items from POs). |
 | `inventory_transfers_list` | read | List ServiceTitan inventory transfers between warehouses. |
@@ -106,29 +123,40 @@ Instead of one shared token, users can sign in through Cloudflare Access with an
 | `inventory_warehouses_list` | read | List ServiceTitan warehouses (storage locations for inventory). |
 | `job_closeout_report` | read | Job closeout rollup of job details, appointments, and invoices. |
 | `jobs_hold_reasons_list` | read | List ServiceTitan Job Hold reasons. |
+| `lead_get` | read | Live ServiceTitan lead get. |
+| `leads_list` | read | Live ServiceTitan leads list. |
+| `list_business_units` | read | List business units; configuration writes require admin. |
 | `list_campaigns` | read | List marketing campaigns. |
 | `list_customer_jobs` | read | List jobs for a customer. |
 | `list_estimate_templates` | read | List estimate templates (reusable line-item bundles used to build estimates). |
 | `list_estimates_job` | read | List all estimates for a specific job. |
 | `list_invoices_job` | read | List all invoices for a specific job. |
+| `list_job_types` | read | List job types; configuration writes require admin. |
 | `list_jobs_today` | read | List ServiceTitan jobs scheduled for TODAY in the configured time zone (ST_TIMEZONE, default America/New_York). |
 | `list_memberships_active` | read | List active memberships. |
 | `list_memberships_expiring` | read | List active memberships expiring within the next N days. |
 | `list_non_job_events` | read | List non-job dispatch events (time-off, training, meetings) for technicians. |
 | `list_open_tasks` | read | List open (incomplete) tasks. |
 | `list_service_categories` | read | List pricebook categories and their nested subcategory trees. |
+| `list_tag_types` | read | List tag types; configuration writes require admin. |
 | `list_technicians_available` | read | List the active technician roster from ServiceTitan Settings. |
 | `list_unpaid_invoices` | read | List invoices with an outstanding balance (unpaid or partially paid). |
+| `payment_get` | read | Live ServiceTitan payment get. |
+| `payments_list` | read | Live ServiceTitan payments list. |
 | `payroll_job_timesheets_list` | read | List ServiceTitan payroll job timesheets (dispatched/arrived/done times per technician per appointment), with minute-truncated drive_minutes and working_minutes. |
 | `payroll_location_rates_list` | read | List ServiceTitan location-based pay rates. |
 | `payroll_non_job_timesheets_list` | read | List ServiceTitan non-job timesheets (meeting/training/admin time). |
 | `payroll_payrolls_list` | read | List ServiceTitan payroll records (per-employee payroll runs). |
 | `payroll_settings_get` | read | Get the tenant payroll configuration (pay period, overtime rules, etc.). |
+| `purchase_order_get` | read | Live ServiceTitan purchase order get. |
+| `purchase_orders_list` | read | Live ServiceTitan purchase orders list. |
 | `search_materials` | read | Look up pricebook materials by exact `code` (tries raw, UPPERCASE, and UPPERCASE-hyphenated variants) or list them one page at a time with active/page/pageSize. |
 | `search_pricebook_all` | read | Search the ServiceTitan pricebook across services, materials, and equipment. |
 | `search_pricebook_services` | read | Look up pricebook services by exact `code` (tries raw, UPPERCASE, and UPPERCASE-hyphenated variants) or list them one page at a time with active/page/pageSize. |
 | `search_pricebook_templates` | read | Find estimate templates and proposal templates whose name, internal name, or summary contains every word of query. |
 | `sell_estimate` | write | Mark an estimate Sold. Requires a `soldBy` technician ID. |
+| `service_agreement_get` | read | Live ServiceTitan service agreement get. |
+| `service_agreements_list` | read | Live ServiceTitan service agreements list. |
 | `st_add_invoice_line_item` | write | Add or update line items on an existing invoice, one PATCH per line item. |
 | `st_create_adjustment_invoice` | write | Create an adjustment invoice against a Posted or Exported parent invoice. Each SKU is checked live against the pricebook first. |
 | `st_create_material` | write | Create a pricebook material. Reads it back after the write and reports verified or mismatched fields. |
@@ -147,10 +175,13 @@ Instead of one shared token, users can sign in through Cloudflare Access with an
 | `st_report_status` | read | Perform one bounded status check for a persisted report run. |
 | `st_run_report` | read | Run or discover ServiceTitan native reports. |
 | `unsell_estimate` | write | Revert a Sold estimate back to Open. |
+| `update_business_unit_metadata` | write | Update business unit metadata; configuration writes require admin. |
 | `update_estimate_template` | write | Update an estimate template. |
+| `update_job_type` | write | Update job type; configuration writes require admin. |
 | `update_proposal_template` | write | Update a proposal template. |
+| `update_tag_type` | write | Update tag type; configuration writes require admin. |
 
-Write tools need the bearer-token (`MCP_TOKEN`) login. OAuth sessions are read-only.
+Operational write tools use the bearer-token (`MCP_TOKEN`) login. Configuration writes require the separate `MCP_CONFIG_ADMIN_TOKEN` and `CONFIGURATION_WRITES_ENABLED="true"`. OAuth sessions are read-only. See [configuration and profiles](docs/configuration-and-parity.md).
 
 A write that ServiceTitan accepted but that the server could not read back is reported as outcome-unknown; check it in ServiceTitan before retrying.
 

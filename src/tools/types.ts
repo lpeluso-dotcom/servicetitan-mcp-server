@@ -16,6 +16,7 @@ export interface StEndpointDescriptor {
   method: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
   
   path: string;
+  variants?: readonly string[];
   source: 'live' | 'd1' | 'mixed' | 'computed';
 }
 

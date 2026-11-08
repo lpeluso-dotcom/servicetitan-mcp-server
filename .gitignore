@@ -3,3 +3,8 @@ node_modules/
 .dev.vars
 wrangler.toml
 dist/
+
+# Generated Python test artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/

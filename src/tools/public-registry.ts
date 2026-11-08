@@ -1,3 +1,23 @@
+import { estimate_reference_evidence } from './estimates/estimate_reference_evidence';
+import { equipment_installed_list } from './equipment/equipment_installed_list';
+import { equipment_installed_get } from './equipment/equipment_installed_get';
+import { equipment_systems_list } from './equipment/equipment_systems_list';
+import { service_agreements_list } from './service_agreements/service_agreements_list';
+import { service_agreement_get } from './service_agreements/service_agreement_get';
+import { payments_list } from './accounting/payments_list';
+import { payment_get } from './accounting/payment_get';
+import { ap_bills_list } from './accounting/ap_bills_list';
+import { ap_bill_get } from './accounting/ap_bill_get';
+import { calls_list } from './telecom/calls_list';
+import { call_recording_get } from './telecom/call_recording_get';
+import { call_voicemail_get } from './telecom/call_voicemail_get';
+import { leads_list } from './crm/leads_list';
+import { lead_get } from './crm/lead_get';
+import { bookings_list } from './crm/bookings_list';
+import { booking_get } from './crm/booking_get';
+import { purchase_orders_list } from './inventory/purchase_orders_list';
+import { purchase_order_get } from './inventory/purchase_order_get';
+import { CONFIGURATION_TOOLS } from './configuration';
 import type { ToolDef } from './types';
 import { get_result_page, st_operation_status } from './infra';
 
@@ -33,7 +53,6 @@ import { st_create_adjustment_invoice } from './invoicing/st_create_adjustment_i
 
 import { list_memberships_active } from './memberships/list_memberships_active';
 import { list_memberships_expiring } from './memberships/list_memberships_expiring';
-import { create_recurring_service } from './memberships/create_recurring_service';
 
 import { get_call } from './calls_forms/get_call';
 import { get_form_submission } from './calls_forms/get_form_submission';
@@ -98,6 +117,9 @@ export const HOUSEKEEPING_WRITES: Readonly<Record<string, string>> = {
 };
 
 export const PUBLIC_TOOLS: readonly ToolDef<any>[] = [
+  ...CONFIGURATION_TOOLS,
+  estimate_reference_evidence,
+  equipment_installed_list, equipment_installed_get, equipment_systems_list, service_agreements_list, service_agreement_get, payments_list, payment_get, ap_bills_list, ap_bill_get, calls_list, call_recording_get, call_voicemail_get, leads_list, lead_get, bookings_list, booking_get, purchase_orders_list, purchase_order_get,
   get_result_page, st_operation_status,
   
   find_customer, get_customer, get_customer_locations, list_customer_jobs, get_customer_membership, add_customer_note,
@@ -110,7 +132,7 @@ export const PUBLIC_TOOLS: readonly ToolDef<any>[] = [
   
   get_invoice, list_invoices_job, get_invoice_balance, list_unpaid_invoices, st_add_invoice_line_item, st_create_adjustment_invoice,
   
-  list_memberships_active, list_memberships_expiring, create_recurring_service,
+  list_memberships_active, list_memberships_expiring,
   
   get_call, get_form_submission,
   
@@ -148,5 +170,5 @@ export const CUT_FROM_RELEASE_1: Readonly<Record<string, string>> = {
   opportunity_get: 'no public ServiceTitan endpoint',
   // The source (src/tools/jobs/assign_technicians.ts) and its unit tests stay;
   // only the registration is withheld.
-  assign_technicians: "Held back: ServiceTitan's appointment-assignment request contract (path and body field names) is not yet verified against a live tenant, and the two-step unassign/assign is not atomic.",
+  assign_technicians: "Held back: ServiceTitan's appointment-assignment request contract (path and body field names) is not yet verified against a live tenant, and assignment replacement is not atomic.",
 };

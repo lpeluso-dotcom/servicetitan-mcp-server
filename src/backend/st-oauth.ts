@@ -35,6 +35,7 @@ function requireSecret(value: string | undefined, name: string): string {
 async function mint(env: TokenEnv, key: string, clientId: string, clientSecret: string): Promise<string> {
   const resp = await fetch(`${stAuthBase(env)}/connect/token`, {
     method: 'POST',
+    redirect: 'manual',
     headers: { 'content-type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
       grant_type: 'client_credentials',
@@ -67,7 +68,7 @@ async function mint(env: TokenEnv, key: string, clientId: string, clientSecret: 
 export async function getStAccessToken(env: TokenEnv): Promise<string> {
   const clientId = requireSecret(env.ST_CLIENT_ID, 'ST_CLIENT_ID');
   const clientSecret = requireSecret(env.ST_CLIENT_SECRET, 'ST_CLIENT_SECRET');
-  const key = `${stAuthBase(env)}|${clientId}`;
+  const key = JSON.stringify([stAuthBase(env), clientId, clientSecret]);
   if (cached && cached.key === key && Date.now() < cached.expiresAt - TOKEN_REFRESH_SKEW_MS) {
     return cached.token;
   }
@@ -94,6 +95,6 @@ export function setMintTimeoutMsForTest(ms: number | null): void {
 }
 
 export function invalidateStAccessToken(env: TokenEnv): void {
-  const key = `${stAuthBase(env)}|${env.ST_CLIENT_ID}`;
+  const key = JSON.stringify([stAuthBase(env), env.ST_CLIENT_ID, env.ST_CLIENT_SECRET]);
   if (cached && cached.key === key) cached = null;
 }

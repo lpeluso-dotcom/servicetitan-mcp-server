@@ -8,8 +8,10 @@ import { scopeFor } from '../scope';
 
 export const RESULT_THRESHOLD = 80_000;
 export const RESULT_TTL_S = 900;
-const PAGE_BYTES = 48_000;
 const PREVIEW_BYTES = 4_000;
+// A page must come back from get_result_page inline. Leave room under the inline
+// ceiling for the response fields around the stored page (status, ids, cursors).
+const PAGE_WIRE_BYTES = RESULT_THRESHOLD - 4_000;
 export type ContentBlock = { type: 'text'; text: string } | { type: 'resource_link'; uri: string; name: string; mimeType?: string };
 export interface OffloadResult { offloaded: boolean; content: ContentBlock[]; structuredContent: Record<string, unknown> }
 
@@ -29,6 +31,12 @@ interface StoredPage {
 
 const QUALIFICATION_KEY = /(^|_)(source|as.?of|freshness|partial|truncated|total|returned|count|unit|calculation|basis|warning|warnings|failures|window|scope)($|_)/i;
 const utf8Bytes = (value: unknown) => new TextEncoder().encode(JSON.stringify(value)).length;
+// An inline response carries the value twice: as structuredContent JSON and again
+// JSON-escaped inside the text block. Pages are sized against both copies.
+const wireBytes = (value: unknown) => {
+  const json = JSON.stringify(value);
+  return new TextEncoder().encode(json).length + new TextEncoder().encode(JSON.stringify(json)).length;
+};
 
 export function wrapStructuredContent(result: unknown): Record<string, unknown> {
   return result !== null && typeof result === 'object' && !Array.isArray(result) ? result as Record<string, unknown> : { result };
@@ -55,16 +63,20 @@ function largestTopLevelArray(result: unknown): { path: string; items: unknown[]
   return { path, items, rootFields };
 }
 
-function rowPages(path: string, items: unknown[], rootFields?: Record<string, unknown>): StoredPage[] {
+function rowPages(path: string, items: unknown[], itemBytes: number[], rootFields?: Record<string, unknown>): StoredPage[] {
   const groups: unknown[][] = [];
   let current: unknown[] = [];
-  for (const item of items) {
-    if (current.length > 0 && utf8Bytes([...current, item]) > PAGE_BYTES) {
+  // Page 0 also carries root_fields.
+  let bytes = rootFields ? wireBytes(rootFields) : 0;
+  items.forEach((item, index) => {
+    if (current.length > 0 && bytes + itemBytes[index] > PAGE_WIRE_BYTES) {
       groups.push(current);
       current = [];
+      bytes = 0;
     }
     current.push(item);
-  }
+    bytes += itemBytes[index];
+  });
   if (current.length > 0 || groups.length === 0) groups.push(current);
   let offset = 0;
   return groups.map((group, page) => {
@@ -87,23 +99,27 @@ function rowPages(path: string, items: unknown[], rootFields?: Record<string, un
 
 function storedPages(result: unknown): StoredPage[] {
   const rows = largestTopLevelArray(result);
-  if (rows && rows.items.every((item) => utf8Bytes(item) <= PAGE_BYTES) &&
-      (!rows.rootFields || utf8Bytes(rows.rootFields) <= PAGE_BYTES)) {
-    return rowPages(rows.path, rows.items, rows.rootFields);
+  if (rows) {
+    // +4 covers the array separators in both copies.
+    const itemBytes = rows.items.map((item) => wireBytes(item) + 4);
+    const rootBytes = rows.rootFields ? wireBytes(rows.rootFields) : 0;
+    if (itemBytes.every((bytes) => bytes <= PAGE_WIRE_BYTES) && rootBytes + (itemBytes[0] ?? 0) <= PAGE_WIRE_BYTES) {
+      return rowPages(rows.path, rows.items, itemBytes, rows.rootFields);
+    }
   }
   const text = JSON.stringify(result ?? null);
   const segments: string[] = [];
   let cursor = 0;
   while (cursor < text.length) {
     let low = cursor + 1;
-    let high = Math.min(text.length, cursor + PAGE_BYTES);
+    let high = Math.min(text.length, cursor + PAGE_WIRE_BYTES);
     while (low < high) {
       const middle = Math.ceil((low + high) / 2);
-      if (new TextEncoder().encode(text.slice(cursor, middle)).length <= PAGE_BYTES) low = middle;
+      if (wireBytes(text.slice(cursor, middle)) <= PAGE_WIRE_BYTES) low = middle;
       else high = middle - 1;
     }
     let end = low;
-    
+    // Never split a UTF-16 surrogate pair; JSON reconstruction must be byte-for-byte equivalent.
     if (end < text.length && end > cursor && /[\uD800-\uDBFF]/.test(text[end - 1])) end -= 1;
     if (end <= cursor) end = cursor + 1;
     segments.push(text.slice(cursor, end));
@@ -130,10 +146,10 @@ function preview(items: unknown[]): unknown[] {
 export async function offloadIfLarge(env: Env, correlation: string, result: unknown, _hasOutputSchema: boolean, reqCtx?: RequestContext, tool = 'unknown'): Promise<OffloadResult> {
   const text = JSON.stringify(result ?? null);
   const inline: OffloadResult = { offloaded: false, content: [{ type: 'text', text }], structuredContent: wrapStructuredContent(result) };
-  if (new TextEncoder().encode(JSON.stringify(inline)).length <= RESULT_THRESHOLD) return inline;
+  if (tool === 'get_result_page' || new TextEncoder().encode(JSON.stringify(inline)).length <= RESULT_THRESHOLD) return inline;
   if (!reqCtx?.principal) throw new McpError('auth_failed', 'Authenticated identity required to store a result');
   const bytes = new TextEncoder().encode(text).length;
-  const storageLimit = 1_048_576;
+  const storageLimit = tool === 'list_service_categories' ? 8_388_608 : 1_048_576;
   if (bytes > storageLimit) throw new McpError('validation_error', 'Result exceeds storage budget; narrow filters or request fewer pages');
   const pageValues = storedPages(result);
   const expiresAt = Date.now() + RESULT_TTL_S * 1000;
@@ -168,7 +184,7 @@ export async function getResultPage(env: Env, id: string, page: number, reqCtx: 
   if (!reqCtx.principal) throw new McpError('auth_failed', 'Result not found or not authorized');
   if (!Number.isSafeInteger(page) || page < 0) throw new McpError('validation_error', 'cursor must be a non-negative integer');
   const row = await ownedResultRow(env, id, page, reqCtx).catch(() => { throw new McpError('upstream_error', 'Result storage unavailable'); });
-  if (!row || (reqCtx.allowedTools && !reqCtx.allowedTools.includes(row.tool))) throw new McpError('validation_error', 'Result not found or not authorized');
+  if (!row || (reqCtx.allowedTools && !reqCtx.allowedTools.includes(row.tool)) || (reqCtx.availableTools && !reqCtx.availableTools.includes(row.tool))) throw new McpError('validation_error', 'Result not found or not authorized');
   if (row.expires_at <= Date.now()) {
     return { status: 'expired', result_id: id, cursor: page, next_cursor: null, recovery: 'Result expired. Re-run the original tool to create a fresh result.' };
   }

@@ -140,7 +140,7 @@ export class WriteGate {
     if (scope) {
       const ownership = await this.env.DB.prepare('SELECT owner FROM mcp_confirmation_owners WHERE token_hash = ?').bind(tokenHash).first<{owner:string}>();
       
-      if (ownership ? ownership.owner !== scope : !scope.includes('legacy-shared-client')) throw new Error('confirmation_token identity mismatch');
+      if (!ownership || ownership.owner !== scope) throw new Error('confirmation_token identity mismatch');
     }
     const row = await this.env.DB.prepare(
       'SELECT consumed_at, expires_at FROM confirmation_tokens WHERE token_hash = ? AND tool = ?'

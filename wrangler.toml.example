@@ -61,6 +61,8 @@ new_sqlite_classes = ["OAuthFlowState"]
 crons = ["0 7 * * *"]
 
 [vars]
+# Enable only after integration create/update/read-back validation.
+CONFIGURATION_WRITES_ENABLED = "false"
 MCP_SERVICE_VERSION = "0.2.0"
 # "direct" calls the ServiceTitan API straight from this Worker using the
 # ST_CLIENT_ID / ST_CLIENT_SECRET / ST_APP_KEY secrets below. This build has

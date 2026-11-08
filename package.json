@@ -8,11 +8,12 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --maxWorkers=2",
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler deploy",
+    "capabilities:update": "UPDATE_CAPABILITIES=1 vitest run src/__tests__/capabilities.test.ts --maxWorkers=2"
   },
   "dependencies": {
     "@cloudflare/workers-oauth-provider": "^0.10.3",
-    "@modelcontextprotocol/sdk": "1.32.0",
+    "@modelcontextprotocol/sdk": "1.32.1",
     "agents": "^0.22.0",
     "zod": "^4.5.4",
     "@modelcontextprotocol/client": "2.3.0",
@@ -31,7 +32,7 @@
     "agents": {
       "@modelcontextprotocol/client": "2.3.0",
       "@modelcontextprotocol/core": "2.3.0",
-      "@modelcontextprotocol/sdk": "1.32.0",
+      "@modelcontextprotocol/sdk": "1.32.1",
       "@modelcontextprotocol/server": "2.3.0"
     }
   }

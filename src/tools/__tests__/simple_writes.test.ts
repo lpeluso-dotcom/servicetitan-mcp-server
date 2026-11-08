@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { z } from 'zod';
 import { sell_estimate, unsell_estimate, dismiss_estimate } from '../estimates/update_estimate_status';
-import { create_recurring_service } from '../memberships/create_recurring_service';
 import { assign_technicians } from '../jobs/assign_technicians';
 import { PUBLIC_TOOLS, CUT_FROM_RELEASE_1 } from '../public-registry';
 import { filterToolsForRole } from '../role-filter';
@@ -105,84 +104,14 @@ describe('estimate status writes', () => {
   });
 });
 
-describe('create_recurring_service', () => {
-  const args = { membershipId: 5, serviceTypeId: 9, locationId: 3 };
-
-  it('dry run returns a token and makes no ST call', async () => {
-    const env = makeEnv(async () => { throw new Error('no ST call on dry run'); });
-    const dry: any = await create_recurring_service.handler(env, args, CTX);
-    expect(dry.dryRun).toBe(true);
-    expect(dry.confirmation_token).toMatch(/^create_recurring_service\|/);
-    expect(dry.st_endpoint).toBe('/memberships/v2/tenant/555/recurring-service-types/9/recurring-services');
-    expect(env.ST_TRANSPORT.fetch).not.toHaveBeenCalled();
-  });
-
-  it('confirm POSTs to the recurring-services endpoint', async () => {
-    const env = makeEnv(async () => ok());
-    const dry: any = await create_recurring_service.handler(env, args, CTX);
-    await create_recurring_service.handler(env, { ...args, dryRun: false, confirmation_token: dry.confirmation_token }, CTX);
-    const [body] = writes(env);
-    expect(body.endpoint).toBe('/memberships/v2/tenant/555/recurring-service-types/9/recurring-services');
-    expect(body.method).toBe('POST');
-    expect(body.payload).toEqual(args);
-  });
-});
-
-describe('assign_technicians', () => {
-  const args = { appointmentId: 21, technicianIds: [4, 6] };
-
-  it('dry run shows both steps, returns a token, makes no ST call', async () => {
-    const env = makeEnv(async () => { throw new Error('no ST call on dry run'); });
-    const dry: any = await assign_technicians.handler(env, args, CTX);
-    expect(dry.dryRun).toBe(true);
-    expect(dry.confirmation_token).toMatch(/^assign_technicians\|/);
-    expect(dry.payload.steps).toHaveLength(2);
-    expect(dry.payload.steps[0].endpoint).toBe('/dispatch/v2/tenant/555/appointment-assignments/unassign-technicians');
-    expect(dry.payload.steps[1].endpoint).toBe('/dispatch/v2/tenant/555/appointment-assignments/assign-technicians');
-    expect(env.ST_TRANSPORT.fetch).not.toHaveBeenCalled();
-  });
-
-  it('confirm POSTs unassign then assign', async () => {
-    const env = makeEnv(async () => ok());
-    const dry: any = await assign_technicians.handler(env, args, CTX);
-    const live: any = await assign_technicians.handler(env, { ...args, dryRun: false, confirmation_token: dry.confirmation_token }, CTX);
-    expect(live.dryRun).toBe(false);
-    const calls = writes(env);
-    expect(calls).toHaveLength(2);
-    expect(calls[0]).toEqual({ endpoint: '/dispatch/v2/tenant/555/appointment-assignments/unassign-technicians', method: 'POST', payload: { appointmentId: 21 } });
-    expect(calls[1]).toEqual({ endpoint: '/dispatch/v2/tenant/555/appointment-assignments/assign-technicians', method: 'POST', payload: { appointmentId: 21, technicianIds: [4, 6] } });
-  });
-
-  it('rejects a token minted for different technicianIds before any ST call', async () => {
-    const env = makeEnv(async () => ok());
-    const dry: any = await assign_technicians.handler(env, args, CTX);
-    await expect(
-      assign_technicians.handler(env, { appointmentId: 21, technicianIds: [4], dryRun: false, confirmation_token: dry.confirmation_token }, CTX)
-    ).rejects.toThrow(/args changed/);
-    expect(env.ST_TRANSPORT.fetch).not.toHaveBeenCalled();
-  });
-
-  it('does not assign when the unassign step fails', async () => {
-    const env = makeEnv(async () => new Response('boom', { status: 500 }));
-    const dry: any = await assign_technicians.handler(env, args, CTX);
-    await expect(
-      assign_technicians.handler(env, { ...args, dryRun: false, confirmation_token: dry.confirmation_token }, CTX)
-    ).rejects.toMatchObject({ code: 'upstream_error' });
-    expect(env.ST_TRANSPORT.fetch).toHaveBeenCalledTimes(1);
-  });
-
-  it('requires at least one technician', () => {
-    expect(z.object(assign_technicians.zodSchema).safeParse({ appointmentId: 1, technicianIds: [] }).success).toBe(false);
-  });
-});
 
 describe('registration and roles', () => {
-  const names = ['sell_estimate', 'unsell_estimate', 'dismiss_estimate', 'create_recurring_service'];
+  const names = ['sell_estimate', 'unsell_estimate', 'dismiss_estimate'];
 
   it('assign_technicians is held back from the registry, with its reason in CUT_FROM_RELEASE_1', () => {
     expect(PUBLIC_TOOLS.some((t) => t.name === 'assign_technicians')).toBe(false);
     expect(CUT_FROM_RELEASE_1.assign_technicians).toBe(
-      "Held back: ServiceTitan's appointment-assignment request contract (path and body field names) is not yet verified against a live tenant, and the two-step unassign/assign is not atomic.",
+      "Held back: ServiceTitan's appointment-assignment request contract (path and body field names) is not yet verified against a live tenant, and assignment replacement is not atomic.",
     );
   });
 

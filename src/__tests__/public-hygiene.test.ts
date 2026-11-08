@@ -7,7 +7,7 @@ import { scanForForbidden } from './guards/public-hygiene';
 const repoRoot = process.cwd();
 
 describe('public hygiene guard', () => {
-  it('src, docs, CHANGELOG and README carry no private-deployment references', () => {
+  it('all publishable files carry no private-deployment references', () => {
     const violations = scanForForbidden(repoRoot);
     expect(violations.map((v) => `${v.file}:${v.line} ${v.rule}`)).toEqual([]);
   });
@@ -26,7 +26,7 @@ describe('public hygiene guard', () => {
   it('allows the company name in the README', () => {
     const root = mkdtempSync(join(tmpdir(), 'public-hygiene-'));
     mkdirSync(join(root, 'src'), { recursive: true });
-    writeFileSync(join(root, 'README.md'), 'Copyright 2026 Quality Service Company.\n');
+    writeFileSync(join(root, 'LICENSE'), 'Copyright (c) 2026 Quality Service Company\n');
     expect(scanForForbidden(root)).toEqual([]);
   });
 
@@ -63,4 +63,16 @@ describe('public hygiene guard', () => {
     writeFileSync(join(root, 'docs', 'planted.md'), 'see mcp-servicetitan\nclone to ~/work/x\n');
     expect(scanForForbidden(root).map((v) => v.line).sort()).toEqual([1, 2]);
   });
+});
+
+it('scans JSON, SQL, TOML, scripts and forms, and does not exempt arbitrary README text', () => {
+ const root=mkdtempSync(join(tmpdir(),'public-hygiene-'));
+ for(const name of ['form.json','migration.sql','worker.toml','check.py','README.md']) writeFileSync(join(root,name),'QSC internal configuration\n');
+ expect(scanForForbidden(root).map(v=>v.file).sort()).toEqual(['README.md','check.py','form.json','migration.sql','worker.toml']);
+});
+
+it('rejects binary artifacts instead of silently excluding them', () => {
+ const root=mkdtempSync(join(tmpdir(),'public-hygiene-'));
+ writeFileSync(join(root,'generated.pyc'),Buffer.from([0,1,2,3]));
+ expect(scanForForbidden(root)).toMatchObject([{file:'generated.pyc',rule:'unreviewed binary artifact'}]);
 });
